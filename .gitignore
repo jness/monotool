@@ -1,12 +1,9 @@
 *.swp
 *.bak
 *.orig
-*.pyc
 
-# Python stuff
-env/
-*egg*
-
-# sample project
 Mono/
-
+env/
+*.pyc
+*.pyo
+*egg*
