@@ -1,0 +1,12 @@
+*.swp
+*.bak
+*.orig
+*.pyc
+
+# Python stuff
+env/
+*egg*
+
+# sample project
+Mono/
+

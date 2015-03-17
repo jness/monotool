@@ -1,0 +1,11 @@
+[default]
+
+# Absolute paths to our needed binaries
+xbuild_path = /usr/bin/xbuild
+mono_path = /usr/bin/mono
+nuget_path = /usr/bin/NuGet.exe
+
+# Mono workspace specific detail.
+sln_path = src/
+artifact_path = bin/Debug/
+
