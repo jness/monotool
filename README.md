@@ -7,11 +7,11 @@ A tool for assisting with the Mono build process.
 ```
 # If your are on OSX you can install mono and 
 # xbuild from brew:
-brew mono
+brew install mono
 
 # Install nuget the package manager for the
 # Microsoft development platform
-sudo wget http://nuget.org/nuget.exe -O /usr/local/bin/nuget.exe 
+sudo wget http://nuget.org/nuget.exe -O /opt/local/bin/nuget.exe
 
 # Install Python virtualenv and pip 
 # http://docs.python-guide.org/en/latest/dev/virtualenvs/
