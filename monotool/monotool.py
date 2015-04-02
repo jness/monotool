@@ -68,28 +68,19 @@ class MonoTool(object):
         """
         Runs a command and returns a tuple of stdout and stderr
         """
+        self.logger.info('Running command %s' % command)
         process = Popen(command, cwd=cwd, shell=True, stdout=PIPE, stderr=PIPE)
-        stdout, stderr = process.communicate()
-        return stdout, stderr, process.returncode
+        while process.poll() is None:
+            self.logger.debug(process.stdout.readline())
+            self.logger.warn(process.stderr.readline())
 
-    def __log_run(self, results):
-        """
-        Logs the results of our __run using a universal method
-        """
-        stdout, stderr, returncode = results
+        # handle any left over bits
+        self.logger.debug(process.stdout.read())
+        self.logger.warn(process.stderr.read())
 
-        if returncode:
-            if stdout:
-                self.logger.error(stdout)
-            if stderr:
-                self.logger.error(stderr)
-            raise Exception('Command returned with %s return code' % returncode)
-        else:
-            if stdout:
-                self.logger.debug(stdout)
-            if stderr:
-                self.logger.warn(stderr)
-            self.logger.info('Command Successful')
+        if process.returncode:
+            raise Exception('Command returned with non zero return')
+        self.logger.info('Command successful')
 
     def __get_projects(self):
         """
@@ -225,7 +216,7 @@ class MonoTool(object):
         """
         cmd = '%s %s /t:clean' % (self.xbuild_path, self.solution_file)
         self.logger.info('Running: %s' % cmd)
-        self.__log_run(self.__run(cmd, cwd=self.solution_path))
+        self.__run(cmd, cwd=self.solution_path)
 
     def nuget_restore(self, **kwargs):
         """
@@ -236,7 +227,7 @@ class MonoTool(object):
         )
         self.logger.info('Running: %s' % cmd)
         self.logger.info('This can take some time...')
-        self.__log_run(self.__run(cmd, cwd=self.solution_path))
+        self.__run(cmd, cwd=self.solution_path)
 
     def xbuild(self, **kwargs):
         """
@@ -245,7 +236,7 @@ class MonoTool(object):
         cmd = '%s %s' % (self.xbuild_path, self.solution_file)
         self.logger.info('Running: %s' % cmd)
         self.logger.info('This can take some time...')
-        self.__log_run(self.__run(cmd, cwd=self.solution_path))
+        self.__run(cmd, cwd=self.solution_path)
 
 def get_version():
     """
