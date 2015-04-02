@@ -216,7 +216,6 @@ class MonoTool(object):
         Runs xbuild /t:clean to clear all artifacts.
         """
         cmd = '%s %s /t:clean' % (self.xbuild_path, self.solution_file)
-        self.logger.info('Running: %s' % cmd)
         self.__run(cmd, cwd=self.solution_path)
 
     def nuget_restore(self, **kwargs):
@@ -226,7 +225,6 @@ class MonoTool(object):
         cmd = '%s %s restore %s' % (
                 self.mono_path, self.nuget_path, self.solution_file
         )
-        self.logger.info('Running: %s' % cmd)
         self.logger.info('This can take some time...')
         self.__run(cmd, cwd=self.solution_path)
 
@@ -235,7 +233,6 @@ class MonoTool(object):
         Run xbuild on the solution
         """
         cmd = '%s %s' % (self.xbuild_path, self.solution_file)
-        self.logger.info('Running: %s' % cmd)
         self.logger.info('This can take some time...')
         self.__run(cmd, cwd=self.solution_path)
 
