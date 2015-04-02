@@ -70,13 +70,8 @@ class MonoTool(object):
         """
         self.logger.info('Running command %s' % command)
         process = Popen(command, cwd=cwd, shell=True, stdout=PIPE, stderr=PIPE)
-        while process.poll() is None:
-            self.logger.debug(process.stdout.readline())
-            self.logger.warn(process.stderr.readline())
-
-        # handle any left over bits
-        self.logger.debug(process.stdout.read())
-        self.logger.warn(process.stderr.read())
+        stdout, stderr = process.communicate()
+        [ self.logger.info(i) for i in stdout.split('\n') ]
 
         if process.returncode:
             raise Exception('Command returned with non zero return')
