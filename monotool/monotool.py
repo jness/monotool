@@ -45,14 +45,24 @@ class MonoTool(object):
         return logger
 
 
-    def __config(self, cfg='~/.monotool.conf'):
-        path = os.path.expanduser(cfg)
-        if os.path.exists(path):
-            config = ConfigParser()
-            config.readfp(open(path))
-            return dict(config.items('default'))  # shouldn't be hard coded.
+    def __config(self):
+        """
+        Uses configuration from /etc/monotool.conf or
+        ~/.monotool.conf, the latter trumps the former.
+        """
+        system_path = os.path.expanduser('/etc/monotool.conf')
+        home_path = os.path.expanduser('~/.monotool.conf')
+        if os.path.exists(home_path):
+            config_file = home_path
+        elif os.path.exists(system_path):
+            config_file = system_path
         else:
-            raise Exception('Unable to open %s' % cfg)
+            raise Exception('Unable to find monotool config in %s or %s' %
+                    (system_path, home_path))
+
+        config = ConfigParser()
+        config.readfp(open(config_file))
+        return dict(config.items('default'))  # shouldn't be hard coded.
 
     def __run(self, command, cwd='.'):
         """
