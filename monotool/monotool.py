@@ -99,7 +99,7 @@ class MonoTool(object):
         self.logger.debug('Looking for project definitions in %s' % self.solution_file)
         solution_blob = open(self.solution_file, 'r').read()
         for line in solution_blob.split('\n'):
-            if 'Project(' in line:
+            if 'Project(' in line and '.csproj' in line:
                 _, _, project, csproj, _ = line.split()
 
                 project = project.split('"')[1]  # Ghetto hack to remove string inception.
