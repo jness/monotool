@@ -33,6 +33,18 @@ source ~/virtualenv/monotool/bin/activate
 python setup.py install
 ```
 
+## Quick Install system wide
+
+```
+# Install from Git
+sudo pip install git+https://github.com/bigrentz/monotool.git
+```
+
+# Add Configuration ~/.monotool.conf
+
+Example configuration can be found below:
+  * https://github.com/bigrentz/monotool/blob/master/monotool.conf.example
+
 ## Usage
 
 ### Activating the monotool virtualenv
