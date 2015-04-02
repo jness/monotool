@@ -180,9 +180,12 @@ class MonoTool(object):
             for spec in specs:
                 print '  %s' % spec.split('/')[-1]
 
-    def copy_artifacts(self, dest, **kwargs):
+    def copy_artifacts(self, dest, version=False, **kwargs):
         """
         Copies the artifacts from a solutions file to destination directory.
+
+        If version=True we will concatenate version to project
+        directory name.
         """
         copied = 0
         dest = dest.rstrip('/')
@@ -193,8 +196,11 @@ class MonoTool(object):
 
         _artifacts = self.__get_artifacts()
         for project_name, artifacts in _artifacts:
-            project_version = self.list_project_version(project_name)
-            dir_name = '%s/%s.%s' % (dest, project_name, project_version)
+            if version:
+                project_version = self.list_project_version(project_name)
+                dir_name = '%s/%s.%s' % (dest, project_name, project_version)
+            else:
+                dir_name = '%s/%s' % (dest, project_name)
 
             # Create the project directory if it does not exist.
             if not os.path.exists(dir_name):
