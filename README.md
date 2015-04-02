@@ -38,12 +38,11 @@ python setup.py install
 ```
 # Install from Git
 sudo pip install git+https://github.com/bigrentz/monotool.git
+
+# Add Configuration to /etc/monotool.conf
+# Example configuration can be found below:
+#  * https://github.com/bigrentz/monotool/blob/master/monotool.conf.example
 ```
-
-*Add Configuration ~/.monotool.conf*
-
-Example configuration can be found below:
-  * https://github.com/bigrentz/monotool/blob/master/monotool.conf.example
 
 ## Usage
 
