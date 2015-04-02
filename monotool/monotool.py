@@ -76,7 +76,6 @@ class MonoTool(object):
         """
         Logs the results of our __run using a universal method
         """
-        print 'I made it'
         stdout, stderr, returncode = results
 
         if returncode:
@@ -211,7 +210,7 @@ class MonoTool(object):
 
             for artifact in artifacts:
                 filename = artifact.split('/')[-1]
-                self.logger.info('Copying %s to %s/' % (filename, dir_name))
+                self.logger.debug('Copying %s to %s/' % (filename, dir_name))
                 shutil.copyfile(artifact, '%s/%s' % (dir_name, filename))
 
     def clean(self, **kwargs):
