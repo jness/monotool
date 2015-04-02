@@ -193,6 +193,7 @@ class MonoTool(object):
         """
         Copies the artifacts from a solutions file to destination directory.
         """
+        copied = 0
         dest = dest.rstrip('/')
         if not os.path.exists(dest):
             os.makedirs(dest)
@@ -211,7 +212,9 @@ class MonoTool(object):
             for artifact in artifacts:
                 filename = artifact.split('/')[-1]
                 self.logger.debug('Copying %s to %s/' % (filename, dir_name))
+                copied += 1
                 shutil.copyfile(artifact, '%s/%s' % (dir_name, filename))
+        print 'Copied %d files to %s' % (copied, dest)
 
     def clean(self, **kwargs):
         """
