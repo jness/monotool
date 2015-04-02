@@ -196,7 +196,7 @@ class MonoTool(object):
         """
         dest = dest.rstrip('/')
         if not os.path.exists(dest):
-            raise Exception('Does not appear %s exists' % dest)
+            os.makedirs(dest)
         if not os.path.isdir(dest):
             raise Exception('It does not appear %s is a directory' % dest)
 
