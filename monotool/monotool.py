@@ -215,7 +215,6 @@ class MonoTool(object):
                 self.__gen_script(project_name, '%s/%s' %
                     (dir_name, 'startup.sh'), 'startup_template')
 
-
             for artifact in artifacts:
                 filename = artifact.split('/')[-1]
                 self.logger.debug('Copying %s to %s/' % (filename, dir_name))
