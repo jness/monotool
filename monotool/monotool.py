@@ -210,8 +210,11 @@ class MonoTool(object):
             if os.path.exists(envrc):
                 self.logger.debug('Found envrc.sh for project %s' % project_name)
                 shutil.copyfile(envrc, '%s/%s' % (dir_name, 'envrc.sh'))
-                self.__gen_upstart(project_name, '%s/%s' %
-                    (dir_name, 'upstart.config'))
+                self.__gen_script(project_name, '%s/%s' %
+                    (dir_name, 'upstart.config'), 'upstart_template')
+                self.__gen_script(project_name, '%s/%s' %
+                    (dir_name, 'startup.sh'), 'startup_template')
+
 
             for artifact in artifacts:
                 filename = artifact.split('/')[-1]
@@ -249,12 +252,12 @@ class MonoTool(object):
         self.logger.info('This can take some time...')
         self.__run(cmd, cwd=self.solution_path)
 
-    def __gen_upstart(self, project_name, dest):
+    def __gen_script(self, project_name, dest, script_type):
         """
         Generates upstart script for a project
         """
         pwd = os.path.dirname(__file__)
-        filename = '%s/upstart_template.stache' % pwd
+        filename = '%s/%s.stache' % (pwd, script_type)
         self.logger.debug('Generating upstart for %s' % project_name)
         data = dict(
             project_name=project_name,

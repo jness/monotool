@@ -1,0 +1,10 @@
+#!/bin/bash
+
+chdir $(dirname "${BASH_SOURCE[0]}")
+
+source envrc.sh
+if [ -f $FILE ]; then
+  source override_envrc.sh
+fi
+
+/usr/bin/mono --server --debug {{ project_name }}.exe

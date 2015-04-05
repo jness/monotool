@@ -8,7 +8,7 @@ description "Upstart for {{ project_name }}"
 start on runlevel [2345]
 stop on [!2345]
 
-chdir $(dirname "$(readlink -f "$0")")
+chdir $(dirname "${BASH_SOURCE[0]}")
 
 source envrc.sh
 if [ -f $FILE ]; then
