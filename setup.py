@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.0.15'
+version = '0.0.16'
 
 setup(
     name='monotool',
@@ -20,7 +20,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'argparse'
+        'argparse',
+        'pystache'
     ],
     entry_points= {
         'console_scripts': ['monotool = monotool.monotool:main']

@@ -4,8 +4,10 @@ from glob import glob
 from ConfigParser import ConfigParser
 from subprocess import Popen, PIPE
 from re import search
+from datetime import datetime
 
 import pkg_resources
+import pystache
 import argparse
 import logging
 import shutil
@@ -203,6 +205,14 @@ class MonoTool(object):
             if not os.path.exists(dir_name):
                 os.makedirs(dir_name)
 
+            # copy in envrc.sh if found and create upstart
+            envrc = '%s/envrc.sh' % project_name
+            if os.path.exists(envrc):
+                self.logger.info('Found envrc.sh for project %s' % project_name)
+                shutil.copyfile(envrc, '%s/%s' % (dir_name, 'envrc.sh'))
+                self.__gen_upstart(project_name, '%s/%s' %
+                    (dir_name, 'upstart.config'))
+
             for artifact in artifacts:
                 filename = artifact.split('/')[-1]
                 self.logger.debug('Copying %s to %s/' % (filename, dir_name))
@@ -211,6 +221,7 @@ class MonoTool(object):
                     shutil.copyfile(artifact, '%s/%s' % (dir_name, filename))
                 except IOError:
                     shutil.copytree(artifact, '%s/%s' % (dir_name, filename))
+
         print 'Copied %d files to %s' % (copied, dest)
 
     def clean(self, **kwargs):
@@ -237,6 +248,25 @@ class MonoTool(object):
         cmd = '%s %s' % (self.xbuild_path, self.solution_file)
         self.logger.info('This can take some time...')
         self.__run(cmd, cwd=self.solution_path)
+
+    def __gen_upstart(self, project_name, dest):
+        """
+        Generates upstart script for a project
+        """
+        pwd = os.path.dirname(__file__)
+        filename = '%s/upstart_template.stache' % pwd
+        self.logger.info('Generating upstart for %s' % project_name)
+        data = dict(
+            project_name=project_name,
+            monotool_version=get_version(),
+            timestamp=datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
+        )
+        template = open(filename, 'r').read()
+        upstart_data = pystache.render(template, data)
+        self.logger.info('Writing upstart to %s' % dest)
+        upstart_file = open(dest, 'w')
+        upstart_file.write(upstart_data)
+        upstart_file.close()
 
 def get_version():
     """
