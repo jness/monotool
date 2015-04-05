@@ -208,7 +208,7 @@ class MonoTool(object):
             # copy in envrc.sh if found and create upstart
             envrc = '%s/envrc.sh' % project_name
             if os.path.exists(envrc):
-                self.logger.info('Found envrc.sh for project %s' % project_name)
+                self.logger.debug('Found envrc.sh for project %s' % project_name)
                 shutil.copyfile(envrc, '%s/%s' % (dir_name, 'envrc.sh'))
                 self.__gen_upstart(project_name, '%s/%s' %
                     (dir_name, 'upstart.config'))
@@ -255,7 +255,7 @@ class MonoTool(object):
         """
         pwd = os.path.dirname(__file__)
         filename = '%s/upstart_template.stache' % pwd
-        self.logger.info('Generating upstart for %s' % project_name)
+        self.logger.debug('Generating upstart for %s' % project_name)
         data = dict(
             project_name=project_name,
             monotool_version=get_version(),
@@ -263,7 +263,7 @@ class MonoTool(object):
         )
         template = open(filename, 'r').read()
         upstart_data = pystache.render(template, data)
-        self.logger.info('Writing upstart to %s' % dest)
+        self.logger.debug('Writing upstart to %s' % dest)
         upstart_file = open(dest, 'w')
         upstart_file.write(upstart_data)
         upstart_file.close()
