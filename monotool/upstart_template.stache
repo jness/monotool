@@ -11,7 +11,7 @@ stop on [!2345]
 chdir $(dirname "${BASH_SOURCE[0]}")
 
 source envrc.sh
-if [ -f $FILE ]; then
+if [ -f ./override_envrc.sh ]; then
   source override_envrc.sh
 fi
 
