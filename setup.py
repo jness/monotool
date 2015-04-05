@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.0.17'
+version = '0.0.18'
 
 setup(
     name='monotool',
@@ -18,6 +18,12 @@ setup(
         exclude=['ez_setup', 'tests']
     ),
     include_package_data=True,
+    data_files=[
+        ('monotool', 
+            ['templates/startup_template.stache', 
+            'templates/upstart_template.stache']
+        )
+    ],
     zip_safe=False,
     install_requires=[
         'argparse',
