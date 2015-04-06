@@ -97,7 +97,7 @@ $ deactivate
 
 ```
 $ monotool --help
-usage: monotool [-h] [--version] [--debug] [-s solution_file]  ...
+usage: monotool [-h] [--version] [--debug] -s solution_file  ...
 
 optional arguments:
   -h, --help          show this help message and exit
@@ -111,9 +111,11 @@ Commands:
     listProjectVersion
                       Lists the projects Assembly Version.
     listArtifacts     Lists all artifacts files found in the project.
-    copyArtifacts     Copies all artifacts files found in the project to dest.
-    deleteArtifacts   Deletes all artifacts from solution path.
-    nugetRestore      Run nuget restore on a solution file
+    listSpecs         Lists all nuget spec files found in the project.
+    copyArtifacts     Copies all artifacts files found in the project to
+                      directory.
+    clean             Runs xbuild clean, this will delete all artifacts.
+    nugetRestore      Run nuget restore on a solution file.
     xbuild            xbuild on a solution file
 ```
 
