@@ -182,7 +182,7 @@ $ monotool -s BigRentz.Project.sln copyArtifacts tmp/
 ### Cleaning up
 
 ```
-$ monotool -s BigRentz.Identity.sln clean
+$ monotool -s BigRentz.Project.sln clean
 2015-03-20 10:53:02,272 - INFO - Running: /usr/local/bin/xbuild BigRentz.Project.sln /t:clean
 2015-03-20 10:53:02,571 - INFO - Command Successful
 
