@@ -5,6 +5,7 @@ from ConfigParser import ConfigParser
 from subprocess import Popen, PIPE
 from re import search
 from datetime import datetime
+from pkg_resources import resource_string
 
 import pkg_resources
 import pystache
@@ -210,10 +211,22 @@ class MonoTool(object):
             if os.path.exists(envrc):
                 self.logger.debug('Found envrc.sh for project %s' % project_name)
                 shutil.copyfile(envrc, '%s/%s' % (dir_name, 'envrc.sh'))
-                self.__gen_script(project_name, '%s/%s' %
-                    (dir_name, 'upstart.config'), 'upstart_template')
-                self.__gen_script(project_name, '%s/%s' %
-                    (dir_name, 'startup.sh'), 'startup_template')
+
+                upstart_template = resource_string(__name__, 'templates/upstart_template.stache')
+                startup_template = resource_string(__name__, 'templates/startup_template.stache')
+                upstart = self.__gen_script(project_name, '%s/%s' %
+                    (dir_name, upstart_template), 'upstart_template')
+                startup = self.__gen_script(project_name, '%s/%s' %
+                    (dir_name, startup_template), 'startup_template')
+
+                # write the files
+                upstart_file = open('%s/upstart.sh' % dir_name, 'w')
+                upstart_file.write(upstart)
+                upstart_file.close()
+                startup_file = open('%s/startup.sh' % dir_name, 'w')
+                startup_file.write(upstart)
+                startup_file.close()
+
 
             for artifact in artifacts:
                 filename = artifact.split('/')[-1]
@@ -256,7 +269,7 @@ class MonoTool(object):
         Generates upstart script for a project
         """
         pwd = os.path.dirname(__file__)
-        filename = '%s/%s.stache' % (pwd, script_type)
+        filename = '%s/templates/%s.stache' % (pwd, script_type)
         self.logger.debug('Generating upstart for %s' % project_name)
         data = dict(
             project_name=project_name,
@@ -265,10 +278,7 @@ class MonoTool(object):
         )
         template = open(filename, 'r').read()
         upstart_data = pystache.render(template, data)
-        self.logger.debug('Writing upstart to %s' % dest)
-        upstart_file = open(dest, 'w')
-        upstart_file.write(upstart_data)
-        upstart_file.close()
+        return upstart_data
 
 def get_version():
     """
