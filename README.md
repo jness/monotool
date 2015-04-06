@@ -33,7 +33,7 @@ source ~/virtualenv/monotool/bin/activate
 python setup.py install
 ```
 
-## Quick Install system wide
+## Quick Install (system wide)
 
 ```
 # Install from Git
@@ -43,6 +43,38 @@ sudo pip install git+https://github.com/bigrentz/monotool.git
 # Example configuration can be found below:
 #  * https://github.com/bigrentz/monotool/blob/master/monotool.conf.example
 ```
+
+## Directory Structure
+
+monotool expects the following directory structure per projects:
+
+```
+.
+├── README.md
+└── src
+    ├── BigRentz.Project.PorjectService
+    │   ├── BigRentz.Project.PorjectService.csproj
+    │   ├── bin
+    │   │   └── Debug
+    │   ├── envrc.sh
+    │   └── packages.config
+    └── BigRentz.Project.sln
+```
+
+The repos root solution file should build the needed projects:
+
+```
+$ monotool -s BigRentz.Project.sln listProjects
+BigRentz.Project.PorjectService
+```
+
+If the project is a service and requires a upstart and startup file,
+the project directory (directory containing the .csproj) should
+include a **envrc.sh** with runtime environment. If found we will
+use the mustache templates to generate start.sh and upstart.conf
+in the csproj directory:
+
+   https://github.com/bigrentz/monotool/tree/master/monotool/templates
 
 ## Usage
 
