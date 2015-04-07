@@ -22,8 +22,9 @@ sudo pip install virtualenv
 git clone git@github.com:bigrentz/monotool.git
 cd monotool/
 
-# Copy the example config to your user profile:
+# Copy the example config to your user profile and edit:
 cp monotool.conf.example ~/.monotool.conf
+vim ~/.monotool.conf
 
 # Create a activate Python virtualenv for site-packages:
 virtualenv ~/virtualenv/monotool
