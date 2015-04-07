@@ -1,6 +1,5 @@
 import argparse
 
-
 def get_args(version):
     """
     Parse our input args and return the argparse object
