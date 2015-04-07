@@ -217,9 +217,9 @@ BigRentz.Project
   BigRentz.Project/bin/Debug/BigRentz.Project.dll
 ```
 
-### Copy artifacts to a versioned directory
+### Copy all artifacts to destination directory
 
 ```
 $ monotool copy tmp/
-2015-03-19 07:49:40,095 - INFO - Copying BigRentz.Project.dll to tmp/BigRentz.Project.0.0.0.1/
+2015-03-19 07:49:40,095 - INFO - Copying BigRentz.Project.dll to tmp/BigRentz.Project/
 ```
