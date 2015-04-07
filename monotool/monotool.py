@@ -111,7 +111,7 @@ class MonoTool(object):
             (project_name, self.output_path))
         return glob('%s/*' % output_path)
 
-    def __generate_templates(self, project_name, dir_name):
+    def __write_templates(self, project_name, dir_name):
         """
         Generate upstart and startup for project
         """
@@ -119,6 +119,22 @@ class MonoTool(object):
         startup = self.__generate_project_template(project_name, 'startup_template')
         self.__write('%s/upstart.conf' % dir_name, upstart)
         self.__write('%s/startup.sh' % dir_name, startup)
+
+    def __generate_project_template(self, project_name, template):
+        """
+        Generates template for project.
+        """
+        pwd = os.path.dirname(__file__)
+        filename = '%s/templates/%s.stache' % (pwd, template)
+
+        data = dict(
+            project_name=project_name,
+            version=get_version(),
+            timestamp=self.__timestamp()
+        )
+        template = self.__read(filename)
+        rendered = pystache.render(template, data)
+        return rendered
 
     def list_projects(self, **kwargs):
         """
@@ -139,22 +155,6 @@ class MonoTool(object):
             s = search('^\[assembly\: AssemblyVersion\("(.*)"\)\]', line)
             if s:
                 return s.group(1)
-
-    def __generate_project_template(self, project_name, template):
-        """
-        Generates template for project.
-        """
-        pwd = os.path.dirname(__file__)
-        filename = '%s/templates/%s.stache' % (pwd, template)
-
-        data = dict(
-            project_name=project_name,
-            version=get_version(),
-            timestamp=self.__timestamp()
-        )
-        template = self.__read(filename)
-        rendered = pystache.render(template, data)
-        return rendered
 
     def list_artifacts(self, **kwargs):
         """
@@ -211,7 +211,7 @@ class MonoTool(object):
             if os.path.exists(envrc):
                 self.logger.debug('Found envrc.sh for project %s' % project_name)
                 shutil.copyfile(envrc, '%s/%s' % (dir_name, 'envrc.sh'))
-                self.__generate_templates(project_name, dir_name)
+                self.__write_templates(project_name, dir_name)
 
         print 'Copied %d files to %s' % (copied, dest)
 

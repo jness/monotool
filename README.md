@@ -180,7 +180,7 @@ $ monotool clean
 
 ```
 $ monotool nugetRestore
-2015-03-19 07:48:18,610 - INFO - Running: /usr/bin/mono /Users/jeffreyness/Downloads/NuGet.exe restore BigRentz.Project.sln
+2015-03-19 07:48:18,610 - INFO - Running: /usr/bin/mono /opt/local/bin/nuget.exe restore BigRentz.Project.sln
 2015-03-19 07:48:18,610 - INFO - This can take some time...
 2015-03-19 07:48:26,621 - INFO - Command Successful
 ```
