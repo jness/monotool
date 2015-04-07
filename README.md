@@ -110,7 +110,7 @@ $ deactivate
 
 ```
 $ monotool --help
-usage: monotool [-h] [--version] [--debug] -s solution_file  ...
+usage: monotool [-h] [--version] [--debug] [-s solution_file]  ...
 
 optional arguments:
   -h, --help          show this help message and exit
@@ -124,47 +124,61 @@ Commands:
     listProjectVersion
                       Lists the projects Assembly Version.
     listArtifacts     Lists all artifacts files found in the project.
-    listSpecs         Lists all nuget spec files found in the project.
-    copyArtifacts     Copies all artifacts files found in the project to
+    copy              Copies all artifacts files found in the project to
                       directory.
     clean             Runs xbuild clean, this will delete all artifacts.
     nugetRestore      Run nuget restore on a solution file.
-    xbuild            xbuild on a solution file
+    xbuild            xbuild on a solution file.
+    build             runs clean, nuget_restore, and xbuild.
 ```
 
 ### Getting version
 
 ```
 $ monotool --version
-0.0.5
+0.0.20
 ```
 
 ### List all project definded in the Solution file
 
 ```
-$ monotool -s BigRentz.Project.sln listProjects
+$ monotool listProjects
 BigRentz.Project
 ```
 
 ### Get a project Assembly Version
 
 ```
-$ monotool -s BigRentz.Project.sln listProjectVersion BigRentz.Project
+$ monotool listProjectVersion BigRentz.Project
 1.0.0.0
 ```
 
 ### Debug or verbose logging with the --debug flag
 
 ```
-$ monotool --debug -s BigRentz.Project.sln listProjects
+$ monotool --debug listProjects
 2015-03-19 07:46:51,770 - DEBUG - Looking for project definitions in BigRentz.Project.sln
 BigRentz.Project
 ```
 
+### Specify a solution file
+
+```
+$ monotool -s BigRentz.Project.sln listProjects
+BigRentz.Project
+```
+
+### Cleaning
+
+```
+$ monotool clean
+2015-03-20 10:53:02,272 - INFO - Running: /usr/local/bin/xbuild BigRentz.Project.sln /t:clean
+2015-03-20 10:53:02,571 - INFO - Command Successful
+
 ### Run Nuget Restore on a solution file.
 
 ```
-$ monotool -s BigRentz.Project.sln nugetRestore
+$ monotool nugetRestore
 2015-03-19 07:48:18,610 - INFO - Running: /usr/bin/mono /Users/jeffreyness/Downloads/NuGet.exe restore BigRentz.Project.sln
 2015-03-19 07:48:18,610 - INFO - This can take some time...
 2015-03-19 07:48:26,621 - INFO - Command Successful
@@ -173,16 +187,31 @@ $ monotool -s BigRentz.Project.sln nugetRestore
 ### Running xbuild on a solution file.
 
 ```
-$ monotool -s BigRentz.Project.sln xbuild
+$ monotool xbuild
 2015-03-19 07:48:44,936 - INFO - Running: /usr/bin/xbuild BigRentz.Project.sln
 2015-03-19 07:48:44,937 - INFO - This can take some time...
 2015-03-19 07:48:46,625 - INFO - Command Successful
 ```
 
+### Running clean, nuget_restore and build at once
+
+```
+$ monotool build
+2015-03-20 12:48:02,272 - INFO - Running: /usr/local/bin/xbuild BigRentz.Project.sln /t:clean
+2015-03-20 12:48:02,571 - INFO - Command Successful
+2015-03-20 12:48:18,610 - INFO - Running: /usr/bin/mono /Users/jeffreyness/Downloads/NuGet.exe restore BigRentz.Project.sln
+2015-03-20 12:48:18,610 - INFO - This can take some time...
+2015-03-20 12:48:26,621 - INFO - Command Successful
+2015-03-20 12:48:44,936 - INFO - Running: /usr/bin/xbuild BigRentz.Project.sln
+2015-03-20 12:48:44,937 - INFO - This can take some time...
+2015-03-20 12:48:46,625 - INFO - Command Successful
+
+```
+
 ### Listing build artifacts.
 
 ```
-$ monotool -s BigRentz.Project.sln listArtifacts
+$ monotool listArtifacts
 BigRentz.Project
   BigRentz.Project/bin/Debug/BigRentz.Project.dll
 ```
@@ -190,14 +219,6 @@ BigRentz.Project
 ### Copy artifacts to a versioned directory
 
 ```
-$ monotool -s BigRentz.Project.sln copyArtifacts tmp/
+$ monotool copy tmp/
 2015-03-19 07:49:40,095 - INFO - Copying BigRentz.Project.dll to tmp/BigRentz.Project.0.0.0.1/
 ```
-
-### Cleaning up
-
-```
-$ monotool -s BigRentz.Project.sln clean
-2015-03-20 10:53:02,272 - INFO - Running: /usr/local/bin/xbuild BigRentz.Project.sln /t:clean
-2015-03-20 10:53:02,571 - INFO - Command Successful
-

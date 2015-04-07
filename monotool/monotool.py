@@ -1,19 +1,21 @@
 #!/bin/env python
 
+from pkg_resources import get_distribution
 from glob import glob
-from ConfigParser import ConfigParser
 from subprocess import Popen, PIPE
 from re import search
 from datetime import datetime
-from pkg_resources import resource_string
 
-import pkg_resources
 import pystache
-import argparse
-import logging
 import shutil
 import sys
 import os
+
+from arguments import get_args
+from config import get_config
+from logger import get_logger
+
+APP_NAME = 'monotool'
 
 class MonoTool(object):
 
@@ -21,51 +23,25 @@ class MonoTool(object):
         """
         repo_dir: Directory of the cloned repo.
         """
+
         if debug:
             self.log_level = 'DEBUG'
         else:
             self.log_level = 'INFO'
-        self.logger = self.__logger()
-        self.config = self.__config()
+
+        self.logger = get_logger(self.log_level)
+        self.config = get_config(APP_NAME)
 
         if os.path.exists(solution_file):
             self.solution_file = solution_file.rstrip()
         else:
             raise Exception('Solution file %s not found' % solution_file)
-        self.solution_path = '/'.join(os.path.abspath(solution_file).split('/')[:-1])
 
         # define a couple of our configs
         self.output_path = self.config['output_path']
         self.xbuild_path = self.config['xbuild_path']
         self.mono_path = self.config['mono_path']
         self.nuget_path = self.config['nuget_path']
-
-    def __logger(self):
-        _format = '%(asctime)s - %(levelname)s - %(message)s'
-        logging.basicConfig(format=_format)
-        logger = logging.getLogger('monotool')  # shouldn't be hard coded.
-        logger.setLevel(getattr(logging, self.log_level))
-        return logger
-
-
-    def __config(self):
-        """
-        Uses configuration from /etc/monotool.conf or
-        ~/.monotool.conf, the latter trumps the former.
-        """
-        system_path = os.path.expanduser('/etc/monotool.conf')
-        home_path = os.path.expanduser('~/.monotool.conf')
-        if os.path.exists(home_path):
-            config_file = home_path
-        elif os.path.exists(system_path):
-            config_file = system_path
-        else:
-            raise Exception('Unable to find monotool config in %s or %s' %
-                    (system_path, home_path))
-
-        config = ConfigParser()
-        config.readfp(open(config_file))
-        return dict(config.items('default'))  # shouldn't be hard coded.
 
     def __run(self, command, cwd='.'):
         """
@@ -82,93 +58,113 @@ class MonoTool(object):
             raise Exception('Command returned with non zero return')
         self.logger.info('Command successful')
 
+    def __timestamp(self):
+        """
+        Returns a human readable timestamp.
+        """
+        return datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
+
+    def __write(self, filename, data):
+        """
+        Write to a file.
+        """
+        self.logger.debug('Writing data to file %s' % filename)
+        f = open(filename, 'w')
+        f.write(data)
+        f.close()
+
+    def __read(self, filename):
+        """
+        Read from a file.
+        """
+        self.logger.debug('Reading from file %s' % filename)
+        f = open(filename, 'r')
+        data = f.read()
+        f.close()
+        return data
+
+    def __copy(self, path, dest):
+        """
+        Copy a file or directory to destination.
+        """
+        try:
+            shutil.copyfile(path, dest)
+        except IOError:
+            shutil.copytree(path, dest)
+
     def __get_projects(self):
         """
-        Gets the project defined by reading a solution file.
+        Returns all directories containing a csproj file.
         """
         projects = []
-        self.logger.debug('Looking for project definitions in %s' % self.solution_file)
-        solution_blob = open(self.solution_file, 'r').read()
-        for line in solution_blob.split('\n'):
-            if 'Project(' in line and '.csproj' in line:
-                _, _, project, csproj, _ = line.split()
-
-                project = project.split('"')[1]  # Ghetto hack to remove string inception.
-                csproj = csproj.split('"')[1]  # Ghetto hack to remove string inception.
-                csproj = csproj.replace('\\', '/')  # Windows path to Linux..
-
-                # Need to get path from csproj
-                project_path = csproj.split('/')[:-1][0]
-                output_path = '%s/%s' % (project_path, self.output_path)
-                projects.append(dict(project=project, csproj=csproj, output_path=output_path,
-                    project_path=project_path))
+        csprojs = glob('*/*.csproj')
+        for csproj in csprojs:
+            projects.append(csproj.split('/')[0])
         return projects
 
-    def __get_project(self, project_name):
-        """
-        Get a project from project_name
-        """
-        for project in self.__get_projects():
-            if project.get('project') == project_name:
-                return project
-
-    def __get_artifacts(self):
+    def __get_artifacts(self, project_name):
         """
         Returns a list of file artifacts
         """
-        artifacts = []
-        projects = self.__get_projects()
-        for project in projects:
-            output_path = '%s/%s' % (project['project_path'], self.output_path)
-            self.logger.debug('Looking for artifacts in %s' % output_path)
-            data = glob('%s/*' % output_path)
-            if data:
-                artifacts.append([ project['project'], data ])
-        return artifacts
+        output_path = '%s/%s' % (project_name, self.output_path)
+        self.logger.debug('Looking for artifacts in %s/%s' % 
+            (project_name, self.output_path))
+        return glob('%s/*' % output_path)
 
-    def __get_specs(self):
+    def __generate_templates(self, project_name, dir_name):
         """
-        Returns a list of nuget spec files
+        Generate upstart and startup for project
         """
-        specs = []
-        for _project in self.__get_projects():
-            project = _project['project']
-            project_path = _project['project_path']
-            self.logger.debug('Looking for nuspec in %s' % project_path)
-            data = glob('%s/*.nuspec' % project_path)
-            if data:
-                specs.append([project, data])
-        return specs
+        upstart = self.__generate_project_template(project_name,'upstart_template')
+        startup = self.__generate_project_template(project_name, 'startup_template')
+        self.__write('%s/upstart.conf' % dir_name, upstart)
+        self.__write('%s/startup.sh' % dir_name, startup)
 
     def list_projects(self, **kwargs):
         """
         Returns a list of all projects
         """
-        return '\n'.join([ p['project'] for p in self.__get_projects() ])
+        return '\n'.join([ p for p in self.__get_projects() ])
 
     def list_project_version(self, project_name, **kwargs):
         """
         Get the project's AssemblyVersion.
         """
-        project = self.__get_project(project_name)
-        if not project:
-            raise Exception('Project not found in Solution file.')
-        filename = '%s/Properties/AssemblyInfo.cs'
-        f = open(filename % project['project_path'], 'r').read()
-        for line in f.split('\n'):
+        filename = '%s/Properties/AssemblyInfo.cs' % project_name
+        if not os.path.exists(filename):
+            raise Exception('Unable to find %s' % filename)
+
+        data = self.__read(filename)
+        for line in data.split('\n'):
             s = search('^\[assembly\: AssemblyVersion\("(.*)"\)\]', line)
             if s:
                 return s.group(1)
+
+    def __generate_project_template(self, project_name, template):
+        """
+        Generates template for project.
+        """
+        pwd = os.path.dirname(__file__)
+        filename = '%s/templates/%s.stache' % (pwd, template)
+
+        data = dict(
+            project_name=project_name,
+            version=get_version(),
+            timestamp=self.__timestamp()
+        )
+        template = self.__read(filename)
+        rendered = pystache.render(template, data)
+        return rendered
 
     def list_artifacts(self, **kwargs):
         """
         Returns a list of all solutions in project_path
         """
-        _artifacts = self.__get_artifacts()
-        for project, artifacts in _artifacts:
-            print project
-            for artifact in artifacts:
-                print '  %s' % artifact.split('/')[-1]
+        for project_name in self.__get_projects():
+            for artifacts in self.__get_artifacts(project_name):
+                print project_name
+                for artifact in artifacts:
+                    print '  %s' % artifact.split('/')[-1]
 
     def list_specs(self, **kwargs):
         """
@@ -180,7 +176,7 @@ class MonoTool(object):
             for spec in specs:
                 print '  %s' % spec.split('/')[-1]
 
-    def copy_artifacts(self, dest, version=False, **kwargs):
+    def copy(self, dest, **kwargs):
         """
         Copies the artifacts from a solutions file to destination directory.
 
@@ -189,53 +185,34 @@ class MonoTool(object):
         """
         copied = 0
         dest = dest.rstrip('/')
+
+        # create directory if not present
         if not os.path.exists(dest):
             os.makedirs(dest)
-        if not os.path.isdir(dest):
-            raise Exception('It does not appear %s is a directory' % dest)
 
-        _artifacts = self.__get_artifacts()
-        for project_name, artifacts in _artifacts:
-            if version:
-                project_version = self.list_project_version(project_name)
-                dir_name = '%s/%s.%s' % (dest, project_name, project_version)
-            else:
-                dir_name = '%s/%s' % (dest, project_name)
+        for project_name in self.__get_projects():
 
-            # Create the project directory if it does not exist.
+            # Create the project directory if not present
+            dir_name = '%s/%s' % (dest, project_name)
             if not os.path.exists(dir_name):
                 os.makedirs(dir_name)
+
+            artifacts = self.__get_artifacts(project_name)
+            for artifact in artifacts:
+                filename = artifact.split('/')[-1]
+                self.logger.debug('Copying %s to %s/' % (filename, dir_name))
+
+                # copyfile or copytree depending on if file or directory.
+                self.__copy(artifact, '%s/%s' % (dir_name, filename))
+
+                copied += 1
 
             # copy in envrc.sh if found and create upstart
             envrc = '%s/envrc.sh' % project_name
             if os.path.exists(envrc):
                 self.logger.debug('Found envrc.sh for project %s' % project_name)
                 shutil.copyfile(envrc, '%s/%s' % (dir_name, 'envrc.sh'))
-
-                upstart_template = resource_string(__name__, 'templates/upstart_template.stache')
-                startup_template = resource_string(__name__, 'templates/startup_template.stache')
-                upstart = self.__gen_script(project_name, '%s/%s' %
-                    (dir_name, upstart_template), 'upstart_template')
-                startup = self.__gen_script(project_name, '%s/%s' %
-                    (dir_name, startup_template), 'startup_template')
-
-                # write the files
-                upstart_file = open('%s/upstart.sh' % dir_name, 'w')
-                upstart_file.write(upstart)
-                upstart_file.close()
-                startup_file = open('%s/startup.sh' % dir_name, 'w')
-                startup_file.write(upstart)
-                startup_file.close()
-
-
-            for artifact in artifacts:
-                filename = artifact.split('/')[-1]
-                self.logger.debug('Copying %s to %s/' % (filename, dir_name))
-                copied += 1
-                try:
-                    shutil.copyfile(artifact, '%s/%s' % (dir_name, filename))
-                except IOError:
-                    shutil.copytree(artifact, '%s/%s' % (dir_name, filename))
+                self.__generate_templates(project_name, dir_name)
 
         print 'Copied %d files to %s' % (copied, dest)
 
@@ -244,7 +221,7 @@ class MonoTool(object):
         Runs xbuild /t:clean to clear all artifacts.
         """
         cmd = '%s %s /t:clean' % (self.xbuild_path, self.solution_file)
-        self.__run(cmd, cwd=self.solution_path)
+        self.__run(cmd)
 
     def nuget_restore(self, **kwargs):
         """
@@ -254,7 +231,7 @@ class MonoTool(object):
                 self.mono_path, self.nuget_path, self.solution_file
         )
         self.logger.info('This can take some time...')
-        self.__run(cmd, cwd=self.solution_path)
+        self.__run(cmd)
 
     def xbuild(self, **kwargs):
         """
@@ -262,88 +239,42 @@ class MonoTool(object):
         """
         cmd = '%s %s' % (self.xbuild_path, self.solution_file)
         self.logger.info('This can take some time...')
-        self.__run(cmd, cwd=self.solution_path)
+        self.__run(cmd)
 
-    def __gen_script(self, project_name, dest, script_type):
+    def build(self, **kwargs):
         """
-        Generates upstart script for a project
+        Runs clean, nuget_restore, and xbuild all in one.
         """
-        pwd = os.path.dirname(__file__)
-        filename = '%s/templates/%s.stache' % (pwd, script_type)
-        self.logger.debug('Generating upstart for %s' % project_name)
-        data = dict(
-            project_name=project_name,
-            monotool_version=get_version(),
-            timestamp=datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
-        )
-        template = open(filename, 'r').read()
-        upstart_data = pystache.render(template, data)
-        return upstart_data
+        self.clean()
+        self.nuget_restore()
+        self.xbuild()
+
+def default_solution():
+    """
+    Try to determine our default solution file
+    """
+    solutions = glob('*.sln')
+    if len(solutions) == 1:
+        return solutions[0]
+    elif len(solutions) < 1:
+        raise Exception('More than one solution file found, please use -s flag.')
+    else:
+        raise Exception('No solution files found in path.')
 
 def get_version():
     """
     Return application version.
     """
-    return pkg_resources.require("monotool")[0].version
-
-def get_args():
-    """
-    Parse our input args and return the argparse object
-    """
-    
-    # Setup a basic parser for our input arguments.
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(title="Commands", metavar="")
-    
-    parser.add_argument('--version', action='version', version=get_version())
-    parser.add_argument('--debug', action='store_true', dest='debug', default=False)
-    parser.add_argument('-s', dest='solution_file', metavar='solution_file', required=True,
-            help='A solution file to work with.')
-
-    # Our subparser commands
-    list_projects = subparsers.add_parser('listProjects',
-            help='Lists all project files found in the solution.')
-    list_projects.set_defaults(method='list_projects')
-
-    list_project_version = subparsers.add_parser('listProjectVersion',
-            help='Lists the projects Assembly Version.')
-    list_project_version.add_argument('project_name', help='A project in the solution file.')
-    list_project_version.set_defaults(method='list_project_version')
-
-    list_artifacts = subparsers.add_parser('listArtifacts',
-            help='Lists all artifacts files found in the project.')
-    list_artifacts.set_defaults(method='list_artifacts')
-
-    list_specs = subparsers.add_parser('listSpecs',
-            help='Lists all nuget spec files found in the project.')
-    list_specs.set_defaults(method='list_specs')
-
-    copy_artifacts = subparsers.add_parser('copyArtifacts',
-            help='Copies all artifacts files found in the project to directory.')
-    copy_artifacts.add_argument('dest', help='The destination directory.')
-    copy_artifacts.set_defaults(method='copy_artifacts')
-
-    clean = subparsers.add_parser('clean',
-            help='Runs xbuild clean, this will delete all artifacts.')
-    clean.set_defaults(method='clean')
-
-    nuget_restore = subparsers.add_parser('nugetRestore',
-            help='Run nuget restore on a solution file.')
-    nuget_restore.set_defaults(method='nuget_restore')
-
-    xbuild = subparsers.add_parser('xbuild',
-            help='xbuild on a solution file.')
-    xbuild.set_defaults(method='xbuild')
-
-    # parse our parsers and get the args.
-    args = parser.parse_args()
-    return args
+    return get_distribution(APP_NAME).version
 
 def main():
     """
     Main entry point for the program.
     """
-    args = get_args()
+    args = get_args(get_version())
+
+    if not args.solution_file:
+        args.solution_file = default_solution()
 
     # create a new MonoTool object using our project path.
     mt = MonoTool(args.solution_file, debug=args.debug)
@@ -356,4 +287,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
