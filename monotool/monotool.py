@@ -24,7 +24,8 @@ class MonoTool(object):
         repo_dir: Directory of the cloned repo.
         """
 
-        if debug:
+        self.debug = debug
+        if self.debug:
             self.log_level = 'DEBUG'
         else:
             self.log_level = 'INFO'
@@ -53,7 +54,8 @@ class MonoTool(object):
         self.logger.debug(stdout)
 
         if process.returncode:
-            if stderr:
+            self.logger.error(stdout)
+            if stderr and not self.debug:
                 self.logger.error(stderr)
             raise Exception('Command returned with non zero return')
         self.logger.info('Command successful')
