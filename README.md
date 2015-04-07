@@ -89,6 +89,10 @@ export BR_PR_DB_NAME=project
 export BR_PR_LISTEN_PORT=1337
 ```
 
+If present we will create a few scripts based of our templates:
+
+   https://github.com/bigrentz/monotool/tree/master/monotool/templates
+
 ## Usage
 
 ### Activating the monotool virtualenv
