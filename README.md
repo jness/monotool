@@ -81,13 +81,12 @@ in the csproj directory:
 The envrc.sh file is merely a *nix source-able text file:
 
 ```
-export BR_PR_POSTGRESQL_USER_ID=username
-export BR_PR_POSTGRESQL_USER_PW=password
-export BR_PR_POSTGRESQL_HOST=localhost
-export BR_PR_POSTGRESQL_PORT=5432
-export BR_PR_POSTGRESQL_DATABASE=database
-export BR_PR_POSTGRESQL_SEARCH_PATH=public
-export BR_PR_LISTEN_PORT=2341
+export BR_PR_DB_USER_ID=username
+export BR_PR_DB_USER_PW=password
+export BR_PR_DB_HOST=localhost
+export BR_PR_DB_PORT=5432
+export BR_PR_DB_NAME=database
+export BR_PR_LISTEN_PORT=1337
 ```
 
 ## Usage
