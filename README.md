@@ -180,7 +180,7 @@ $ monotool clean
 2015-03-20 10:53:02,571 - INFO - Command Successful
 ```
 
-### Run Nuget Restore on a solution file.
+### Run Nuget Restore
 
 ```
 $ monotool nugetRestore
@@ -189,7 +189,7 @@ $ monotool nugetRestore
 2015-03-19 07:48:26,621 - INFO - Command Successful
 ```
 
-### Running xbuild on a solution file.
+### Running xbuild
 
 ```
 $ monotool xbuild
