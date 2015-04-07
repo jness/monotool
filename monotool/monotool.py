@@ -161,10 +161,9 @@ class MonoTool(object):
         Returns a list of all solutions in project_path
         """
         for project_name in self.__get_projects():
+            print project_name
             for artifacts in self.__get_artifacts(project_name):
-                print project_name
-                for artifact in artifacts:
-                    print '  %s' % artifact.split('/')[-1]
+                print '  %s' % artifacts
 
     def list_specs(self, **kwargs):
         """
