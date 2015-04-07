@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.0.22'
+version = '0.0.23'
 
 setup(
     name='monotool',
@@ -20,8 +20,8 @@ setup(
     include_package_data=True,
     data_files=[
         ('monotool/templates',
-            ['templates/startup_template.stache',
-            'templates/upstart_template.stache']
+            ['monotool/templates/startup_template.stache',
+            'monotool/templates/upstart_template.stache']
         )
     ],
     zip_safe=False,
