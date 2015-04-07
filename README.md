@@ -65,7 +65,7 @@ The repos root solution file should build the needed projects:
 
 ```
 $ monotool -s BigRentz.Project.sln listProjects
-BigRentz.Project.PorjectService
+BigRentz.Project.ProjectService
 ```
 
 If the project is a service and requires a upstart and startup file,
