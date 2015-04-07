@@ -96,12 +96,15 @@ class MonoTool(object):
 
     def __get_projects(self):
         """
-        Returns all directories containing a csproj file.
+        Gets the project defined by reading a solution file.
         """
         projects = []
-        csprojs = glob('*/*.csproj')
-        for csproj in csprojs:
-            projects.append(csproj.split('/')[0])
+        self.logger.debug('Looking for project definitions in %s' % self.solution_file)
+        solution_blob = open(self.solution_file, 'r').read()
+        for line in solution_blob.split('\n'):
+            if 'Project(' in line and '.csproj' in line:
+                _, _, project, csproj, _ = line.split()
+                projects.append(project.split('"')[1])  # Ghetto hack to remove string inception.
         return projects
 
     def __get_artifacts(self, project_name):
