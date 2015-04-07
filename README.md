@@ -52,8 +52,8 @@ monotool expects the following directory structure per projects:
 .
 ├── README.md
 └── src
-    ├── BigRentz.Project.PorjectService
-    │   ├── BigRentz.Project.PorjectService.csproj
+    ├── BigRentz.Project.ProjectService
+    │   ├── BigRentz.Project.ProjectService.csproj
     │   ├── bin
     │   │   └── Debug
     │   ├── envrc.sh
