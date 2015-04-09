@@ -138,7 +138,7 @@ Commands:
 
 ```
 $ monotool --version
-0.0.20
+0.0.25
 ```
 
 ### List all project definded in the Solution file
