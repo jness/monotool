@@ -1,5 +1,6 @@
 import argparse
 
+
 def get_args(version):
     """
     Parse our input args and return the argparse object
@@ -10,7 +11,6 @@ def get_args(version):
     subparsers = parser.add_subparsers(title="Commands", metavar="")
     
     parser.add_argument('--version', action='version', version=version)
-    parser.add_argument('--debug', action='store_true', dest='debug', default=False)
     parser.add_argument('-s', dest='solution_file', metavar='solution_file', required=False,
             help='A solution file to work with.')
 

@@ -10,31 +10,26 @@ import shutil
 import sys
 import os
 
-from arguments import get_args
-from config import get_config, APP_NAME
-from logger import get_logger
 from utils import run
+from app import app_name
+from arguments import get_args
+from config import get_config
+from logger import get_logger
+
 
 class MonoTool(object):
 
-    def __init__(self, solution_file, debug=False):
+    def __init__(self, solution_file):
         """
         repo_dir: Directory of the cloned repo.
         """
-
-        self.debug = debug
-        if self.debug:
-            self.log_level = 'DEBUG'
-        else:
-            self.log_level = 'INFO'
-
-        self.logger = get_logger(self.log_level)
-        self.config = get_config()
-
         if os.path.exists(solution_file):
             self.solution_file = solution_file.rstrip()
         else:
             raise Exception('Solution file %s not found' % solution_file)
+
+        self.config = get_config()
+        self.logger = get_logger(__name__)
 
         # define a couple of our configs
         self.output_path = self.config['output_path']
@@ -211,6 +206,7 @@ class MonoTool(object):
         self.restore()
         self.xbuild()
 
+
 def default_solution():
     """
     Try to determine our default solution file
@@ -227,7 +223,7 @@ def get_version():
     """
     Return application version.
     """
-    return get_distribution(APP_NAME).version
+    return get_distribution(app_name()).version
 
 def main():
     """
@@ -239,7 +235,7 @@ def main():
         args.solution_file = default_solution()
 
     # create a new MonoTool object using our project path.
-    mt = MonoTool(args.solution_file, debug=args.debug)
+    mt = MonoTool(args.solution_file)
 
     method = getattr(mt, args.method)
     res = method(**args.__dict__)

@@ -1,15 +1,16 @@
-import os
 from ConfigParser import ConfigParser
+import os
 
-APP_NAME = 'monotool'
+from app import app_name
+
 
 def get_config():
     """
     Uses configuration from /etc/monotool.conf or
     ~/.monotool.conf, the latter trumps the former.
     """
-    system_path = os.path.expanduser('/etc/%s.conf' % APP_NAME)
-    home_path = os.path.expanduser('~/.%s.conf' % APP_NAME)
+    system_path = os.path.expanduser('/etc/%s.conf' % app_name())
+    home_path = os.path.expanduser('~/.%s.conf' % app_name())
     if os.path.exists(home_path):
         config_file = home_path
     elif os.path.exists(system_path):

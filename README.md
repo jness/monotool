@@ -114,12 +114,11 @@ $ deactivate
 
 ```
 $ monotool --help
-usage: monotool [-h] [--version] [--debug] [-s solution_file]  ...
+usage: monotool [-h] [--version] [-s solution_file]  ...
 
 optional arguments:
   -h, --help        show this help message and exit
   --version         show program's version number and exit
-  --debug
   -s solution_file  A solution file to work with.
 
 Commands:
@@ -138,21 +137,13 @@ Commands:
 
 ```
 $ monotool --version
-0.0.25
+0.0.26
 ```
 
 ### List all project definded in the Solution file
 
 ```
 $ monotool lsp
-BigRentz.Project
-```
-
-### Debug or verbose logging with the --debug flag
-
-```
-$ monotool --debug lsp
-2015-03-19 07:46:51,770 - DEBUG - Looking for project definitions in BigRentz.Project.sln
 BigRentz.Project
 ```
 
@@ -217,4 +208,13 @@ BigRentz.Project
 ```
 $ monotool copy bin/
 2015-03-19 07:49:40,095 - INFO - Copying BigRentz.Project.dll to bin/BigRentz.Project/
+```
+
+### Debugging
+
+monotool will log INFO level to standard out and DEBUG level to ./monotool.log:
+
+```
+$ tail -n 1 monotool.log
+2015-04-09 13:14:21,568 - monotool.utils - INFO - Command successful
 ```
