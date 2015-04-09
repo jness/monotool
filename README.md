@@ -65,7 +65,7 @@ monotool expects the following directory structure per projects:
 The repos root solution file should build the needed projects:
 
 ```
-$ monotool -s BigRentz.Project.sln listProjects
+$ monotool -s BigRentz.Project.sln lsp
 BigRentz.Project.ProjectService
 ```
 
@@ -117,23 +117,21 @@ $ monotool --help
 usage: monotool [-h] [--version] [--debug] [-s solution_file]  ...
 
 optional arguments:
-  -h, --help          show this help message and exit
-  --version           show program's version number and exit
+  -h, --help        show this help message and exit
+  --version         show program's version number and exit
   --debug
-  -s solution_file    A solution file to work with.
+  -s solution_file  A solution file to work with.
 
 Commands:
 
-    listProjects      Lists all project files found in the solution.
-    listProjectVersion
-                      Lists the projects Assembly Version.
-    listArtifacts     Lists all artifacts files found in the project.
-    copy              Copies all artifacts files found in the project to
-                      directory.
-    clean             Runs xbuild clean, this will delete all artifacts.
-    nugetRestore      Run nuget restore on a solution file.
-    xbuild            xbuild on a solution file.
-    build             runs clean, nuget_restore, and xbuild.
+    lsp             Lists all project files found in the solution.
+    lsa             Lists all artifacts files found in the project.
+    copy            Copies all artifacts files found in the project to
+                    directory.
+    clean           Runs xbuild clean, this will delete all artifacts.
+    restore         Run nuget restore on a solution file.
+    xbuild          xbuild on a solution file.
+    build           runs clean, nuget_restore, and xbuild.
 ```
 
 ### Getting version
@@ -146,21 +144,14 @@ $ monotool --version
 ### List all project definded in the Solution file
 
 ```
-$ monotool listProjects
+$ monotool lsp
 BigRentz.Project
-```
-
-### Get a project Assembly Version
-
-```
-$ monotool listProjectVersion BigRentz.Project
-1.0.0.0
 ```
 
 ### Debug or verbose logging with the --debug flag
 
 ```
-$ monotool --debug listProjects
+$ monotool --debug lsp
 2015-03-19 07:46:51,770 - DEBUG - Looking for project definitions in BigRentz.Project.sln
 BigRentz.Project
 ```
@@ -168,7 +159,7 @@ BigRentz.Project
 ### Specify a solution file
 
 ```
-$ monotool -s BigRentz.Project.sln listProjects
+$ monotool -s BigRentz.Project.sln lsp
 BigRentz.Project
 ```
 
@@ -183,7 +174,7 @@ $ monotool clean
 ### Run Nuget Restore
 
 ```
-$ monotool nugetRestore
+$ monotool restore
 2015-03-19 07:48:18,610 - INFO - Running: /usr/bin/mono /opt/local/bin/nuget.exe restore BigRentz.Project.sln
 2015-03-19 07:48:18,610 - INFO - This can take some time...
 2015-03-19 07:48:26,621 - INFO - Command Successful
@@ -216,7 +207,7 @@ $ monotool build
 ### Listing build artifacts.
 
 ```
-$ monotool listArtifacts
+$ monotool lsa
 BigRentz.Project
   BigRentz.Project/bin/Debug/BigRentz.Project.dll
 ```
@@ -224,6 +215,6 @@ BigRentz.Project
 ### Copy all artifacts to destination directory
 
 ```
-$ monotool copy tmp/
-2015-03-19 07:49:40,095 - INFO - Copying BigRentz.Project.dll to tmp/BigRentz.Project/
+$ monotool copy bin/
+2015-03-19 07:49:40,095 - INFO - Copying BigRentz.Project.dll to bin/BigRentz.Project/
 ```

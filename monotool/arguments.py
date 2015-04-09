@@ -15,16 +15,12 @@ def get_args(version):
             help='A solution file to work with.')
 
     # Our subparser commands
-    list_projects = subparsers.add_parser('listProjects',
+    list_projects = subparsers.add_parser('lsp',
             help='Lists all project files found in the solution.')
     list_projects.set_defaults(method='list_projects')
 
-    list_project_version = subparsers.add_parser('listProjectVersion',
-            help='Lists the projects Assembly Version.')
-    list_project_version.add_argument('project_name', help='A project in the solution file.')
-    list_project_version.set_defaults(method='list_project_version')
 
-    list_artifacts = subparsers.add_parser('listArtifacts',
+    list_artifacts = subparsers.add_parser('lsa',
             help='Lists all artifacts files found in the project.')
     list_artifacts.set_defaults(method='list_artifacts')
 
@@ -37,9 +33,9 @@ def get_args(version):
             help='Runs xbuild clean, this will delete all artifacts.')
     clean.set_defaults(method='clean')
 
-    nuget_restore = subparsers.add_parser('nugetRestore',
+    nuget_restore = subparsers.add_parser('restore',
             help='Run nuget restore on a solution file.')
-    nuget_restore.set_defaults(method='nuget_restore')
+    nuget_restore.set_defaults(method='restore')
 
     xbuild = subparsers.add_parser('xbuild',
             help='xbuild on a solution file.')

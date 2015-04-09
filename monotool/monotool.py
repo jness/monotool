@@ -2,7 +2,6 @@
 
 from pkg_resources import get_distribution
 from glob import glob
-from subprocess import Popen, PIPE
 from re import search
 from datetime import datetime
 
@@ -12,10 +11,9 @@ import sys
 import os
 
 from arguments import get_args
-from config import get_config
+from config import get_config, APP_NAME
 from logger import get_logger
-
-APP_NAME = 'monotool'
+from utils import run
 
 class MonoTool(object):
 
@@ -31,7 +29,7 @@ class MonoTool(object):
             self.log_level = 'INFO'
 
         self.logger = get_logger(self.log_level)
-        self.config = get_config(APP_NAME)
+        self.config = get_config()
 
         if os.path.exists(solution_file):
             self.solution_file = solution_file.rstrip()
@@ -43,22 +41,6 @@ class MonoTool(object):
         self.xbuild_path = self.config['xbuild_path']
         self.mono_path = self.config['mono_path']
         self.nuget_path = self.config['nuget_path']
-
-    def __run(self, command, cwd='.'):
-        """
-        Runs a command and returns a tuple of stdout and stderr
-        """
-        self.logger.info('Running command %s' % command)
-        process = Popen(command, cwd=cwd, shell=True, stdout=PIPE, stderr=PIPE)
-        stdout, stderr = process.communicate()
-        self.logger.debug(stdout)
-
-        if process.returncode:
-            self.logger.error(stdout)
-            if stderr and not self.debug:
-                self.logger.error(stderr)
-            raise Exception('Command returned with non zero return')
-        self.logger.info('Command successful')
 
     def __timestamp(self):
         """
@@ -147,20 +129,6 @@ class MonoTool(object):
         """
         return '\n'.join([ p for p in self.__get_projects() ])
 
-    def list_project_version(self, project_name, **kwargs):
-        """
-        Get the project's AssemblyVersion.
-        """
-        filename = '%s/Properties/AssemblyInfo.cs' % project_name
-        if not os.path.exists(filename):
-            raise Exception('Unable to find %s' % filename)
-
-        data = self.__read(filename)
-        for line in data.split('\n'):
-            s = search('^\[assembly\: AssemblyVersion\("(.*)"\)\]', line)
-            if s:
-                return s.group(1)
-
     def list_artifacts(self, **kwargs):
         """
         Returns a list of all solutions in project_path
@@ -170,22 +138,10 @@ class MonoTool(object):
             for artifacts in self.__get_artifacts(project_name):
                 print '  %s' % artifacts
 
-    def list_specs(self, **kwargs):
-        """
-        List all NuGet spec files found in projects.
-        """
-        _specs = self.__get_specs()
-        for project, specs in _specs:
-            print project
-            for spec in specs:
-                print '  %s' % spec.split('/')[-1]
-
     def copy(self, dest, **kwargs):
         """
         Copies the artifacts from a solutions file to destination directory.
 
-        If version=True we will concatenate version to project
-        directory name.
         """
         copied = 0
         dest = dest.rstrip('/')
@@ -225,9 +181,9 @@ class MonoTool(object):
         Runs xbuild /t:clean to clear all artifacts.
         """
         cmd = '%s %s /t:clean' % (self.xbuild_path, self.solution_file)
-        self.__run(cmd)
+        run(cmd)
 
-    def nuget_restore(self, **kwargs):
+    def restore(self, **kwargs):
         """
         Run Nuget.exe if we have a packages.json
         """
@@ -235,7 +191,7 @@ class MonoTool(object):
                 self.mono_path, self.nuget_path, self.solution_file
         )
         self.logger.info('This can take some time...')
-        self.__run(cmd)
+        run(cmd)
 
     def xbuild(self, **kwargs):
         """
@@ -243,14 +199,14 @@ class MonoTool(object):
         """
         cmd = '%s %s' % (self.xbuild_path, self.solution_file)
         self.logger.info('This can take some time...')
-        self.__run(cmd)
+        run(cmd)
 
     def build(self, **kwargs):
         """
         Runs clean, nuget_restore, and xbuild all in one.
         """
         self.clean()
-        self.nuget_restore()
+        self.restore()
         self.xbuild()
 
 def default_solution():
@@ -260,7 +216,7 @@ def default_solution():
     solutions = glob('*.sln')
     if len(solutions) == 1:
         return solutions[0]
-    elif len(solutions) < 1:
+    elif len(solutions) > 1:
         raise Exception('More than one solution file found, please use -s flag.')
     else:
         raise Exception('No solution files found in path.')
