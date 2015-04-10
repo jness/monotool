@@ -15,35 +15,35 @@ def get_args(version):
             help='A solution file to work with.')
 
     # Our subparser commands
-    list_projects = subparsers.add_parser('lsp',
+    lsp = subparsers.add_parser('lsp',
             help='Lists all project files found in the solution.')
-    list_projects.set_defaults(method='list_projects')
+    lsp.set_defaults(method='_lsp')
 
 
-    list_artifacts = subparsers.add_parser('lsa',
+    lsa = subparsers.add_parser('lsa',
             help='Lists all artifacts files found in the project.')
-    list_artifacts.set_defaults(method='list_artifacts')
+    lsa.set_defaults(method='_lsa')
 
-    copy_artifacts = subparsers.add_parser('copy',
+    copy = subparsers.add_parser('copy',
             help='Copies all artifacts files found in the project to directory.')
-    copy_artifacts.add_argument('dest', help='The destination directory.')
-    copy_artifacts.set_defaults(method='copy')
+    copy.add_argument('dest', help='The destination directory.')
+    copy.set_defaults(method='_copy')
 
     clean = subparsers.add_parser('clean',
             help='Runs xbuild clean, this will delete all artifacts.')
-    clean.set_defaults(method='clean')
+    clean.set_defaults(method='_clean')
 
     nuget_restore = subparsers.add_parser('restore',
             help='Run nuget restore on a solution file.')
-    nuget_restore.set_defaults(method='restore')
+    nuget_restore.set_defaults(method='_restore')
 
     xbuild = subparsers.add_parser('xbuild',
             help='xbuild on a solution file.')
-    xbuild.set_defaults(method='xbuild')
+    xbuild.set_defaults(method='_xbuild')
 
     build = subparsers.add_parser('build',
             help='runs clean, nuget_restore, and xbuild.')
-    build.set_defaults(method='build')
+    build.set_defaults(method='_build')
 
     # parse our parsers and get the args.
     args = parser.parse_args()

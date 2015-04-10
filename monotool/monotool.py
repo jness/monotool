@@ -3,14 +3,12 @@
 from pkg_resources import get_distribution
 from glob import glob
 from re import search
-from datetime import datetime
 
 import pystache
-import shutil
 import sys
 import os
 
-from utils import run
+from utils import run, copy, write, read, timestamp
 from app import app_name
 from arguments import get_args
 from config import get_config
@@ -36,40 +34,6 @@ class MonoTool(object):
         self.xbuild_path = self.config['xbuild_path']
         self.mono_path = self.config['mono_path']
         self.nuget_path = self.config['nuget_path']
-
-    def __timestamp(self):
-        """
-        Returns a human readable timestamp.
-        """
-        return datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
-
-    def __write(self, filename, data):
-        """
-        Write to a file.
-        """
-        self.logger.debug('Writing data to file %s' % filename)
-        f = open(filename, 'w')
-        f.write(data)
-        f.close()
-
-    def __read(self, filename):
-        """
-        Read from a file.
-        """
-        self.logger.debug('Reading from file %s' % filename)
-        f = open(filename, 'r')
-        data = f.read()
-        f.close()
-        return data
-
-    def __copy(self, path, dest):
-        """
-        Copy a file or directory to destination.
-        """
-        try:
-            shutil.copyfile(path, dest)
-        except IOError:
-            shutil.copytree(path, dest)
 
     def __get_projects(self):
         """
@@ -99,8 +63,8 @@ class MonoTool(object):
         """
         upstart = self.__generate_project_template(project_name,'upstart_template')
         startup = self.__generate_project_template(project_name, 'startup_template')
-        self.__write('%s/upstart.conf' % dir_name, upstart)
-        self.__write('%s/startup.sh' % dir_name, startup)
+        write('%s/upstart.conf' % dir_name, upstart)
+        write('%s/startup.sh' % dir_name, startup)
 
     def __generate_project_template(self, project_name, template):
         """
@@ -112,19 +76,19 @@ class MonoTool(object):
         data = dict(
             project_name=project_name,
             version=get_version(),
-            timestamp=self.__timestamp()
+            timestamp=timestamp()
         )
-        template = self.__read(filename)
+        template = read(filename)
         rendered = pystache.render(template, data)
         return rendered
 
-    def list_projects(self, **kwargs):
+    def _lsp(self, **kwargs):
         """
         Returns a list of all projects
         """
         return '\n'.join([ p for p in self.__get_projects() ])
 
-    def list_artifacts(self, **kwargs):
+    def _lsa(self, **kwargs):
         """
         Returns a list of all solutions in project_path
         """
@@ -135,7 +99,7 @@ class MonoTool(object):
                 for artifacts in self.__get_artifacts(project_name):
                     print '  %s' % artifacts
 
-    def copy(self, dest, **kwargs):
+    def _copy(self, dest, **kwargs):
         """
         Copies the artifacts from a solutions file to destination directory.
 
@@ -160,7 +124,7 @@ class MonoTool(object):
                 self.logger.debug('Copying %s to %s/' % (filename, dir_name))
 
                 # copyfile or copytree depending on if file or directory.
-                self.__copy(artifact, '%s/%s' % (dir_name, filename))
+                copy(artifact, '%s/%s' % (dir_name, filename))
 
                 copied += 1
 
@@ -168,19 +132,19 @@ class MonoTool(object):
             envrc = '%s/envrc.sh' % project_name
             if os.path.exists(envrc):
                 self.logger.debug('Found envrc.sh for project %s' % project_name)
-                shutil.copyfile(envrc, '%s/%s' % (dir_name, 'envrc.sh'))
+                copy(envrc, '%s/%s' % (dir_name, 'envrc.sh'))
                 self.__write_templates(project_name, dir_name)
 
         print 'Copied %d files to %s' % (copied, dest)
 
-    def clean(self, **kwargs):
+    def _clean(self, **kwargs):
         """
         Runs xbuild /t:clean to clear all artifacts.
         """
         cmd = '%s %s /t:clean' % (self.xbuild_path, self.solution_file)
         run(cmd)
 
-    def restore(self, **kwargs):
+    def _restore(self, **kwargs):
         """
         Run Nuget.exe if we have a packages.json
         """
@@ -190,7 +154,7 @@ class MonoTool(object):
         self.logger.info('This can take some time...')
         run(cmd)
 
-    def xbuild(self, **kwargs):
+    def _xbuild(self, **kwargs):
         """
         Run xbuild on the solution
         """
@@ -198,13 +162,13 @@ class MonoTool(object):
         self.logger.info('This can take some time...')
         run(cmd)
 
-    def build(self, **kwargs):
+    def _build(self, **kwargs):
         """
         Runs clean, nuget_restore, and xbuild all in one.
         """
-        self.clean()
-        self.restore()
-        self.xbuild()
+        self._clean()
+        self._restore()
+        self._xbuild()
 
 
 def default_solution():
