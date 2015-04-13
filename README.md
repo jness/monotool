@@ -214,7 +214,11 @@ total 0
 drwxr-xr-x  21 jness  staff   714 Apr 13 08:56 BigRentz.Project
 ```
 
-### Create tarball of all artifacts (includes git commit hash in filename).
+### Create tarball of all artifacts 
+
+The output tarball will be named using the following structure:
+
+  {{ monotool.__get_app_name }}.{{ git_commit_hash }}.tar.gz
 
 ```
 $ monotool archive .
