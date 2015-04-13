@@ -129,7 +129,7 @@ in the csproj directory:
 
    https://github.com/bigrentz/monotool/tree/master/monotool/templates
 
-## envrc.sh
+### envrc.sh
 
 The envrc.sh file is merely a *nix source-able text file:
 
