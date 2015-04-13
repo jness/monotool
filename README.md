@@ -73,7 +73,7 @@ To re-enable the virtualenv run:
 $ source ~/virtualenv/monotool/bin/activate
 ```
 
-## Update vagrant box using salt-call
+## Update monotool on vagrant box using salt-call
 
 If you are using the **BigRentz vagrant box**,
 you can update from inside the vagrant linux
