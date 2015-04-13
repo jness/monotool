@@ -2,7 +2,7 @@
 
 Tool to help BigRentz with Mono building and distributing.
 
-## Installation
+## Installation OSX
 
 If your are on OSX you can install mono and 
 xbuild from brew:
@@ -71,6 +71,16 @@ To re-enable the virtualenv run:
 
 ```
 $ source ~/virtualenv/monotool/bin/activate
+```
+
+## Update vagrant box using salt-call
+
+If you are using the **BigRentz vagrant box**,
+you can update from inside the vagrant linux
+machine using salt-call.
+
+```
+$ sudo salt-call state.sls monotool
 ```
 
 ## Quick Install (system wide)
