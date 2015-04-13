@@ -1,7 +1,7 @@
 import logging
 import sys
 
-from app import app_name
+from app import logfile
 
 def get_logger(name):
 	"""
@@ -19,7 +19,7 @@ def get_logger(name):
 		ch.setLevel(logging.INFO)
 		logger.addHandler(ch)
 
-		fh = logging.FileHandler('/tmp/%s.log' % app_name())
+		fh = logging.FileHandler(logfile())
 		fh.setFormatter(format)
 		fh.setLevel(logging.DEBUG)
 		logger.addHandler(fh)

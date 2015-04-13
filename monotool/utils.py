@@ -57,13 +57,11 @@ def delete(filename):
     """
     Deletes a file or directory.
     """
-    logger = get_logger(__name__)
-    if os.path.isfile(filename):
-        logger.debug('Deleting file %s' % filename)
-        os.remove(filename)
-    else:
-        logger.debug('Deleting directory %s' % filename)
-        shutil.rmtree(filename)
+    if os.path.exists(filename):
+        if os.path.isfile(filename):
+            os.remove(filename)
+        else:
+            shutil.rmtree(filename)
 
 def copy(path, dest):
     """

@@ -10,7 +10,7 @@ import sys
 import os
 
 from utils import run, copy, write, read, delete, mktar, timestamp
-from app import app_name
+from app import app_name, logfile
 from arguments import get_args
 from config import get_config
 from logger import get_logger
@@ -161,14 +161,6 @@ class MonoTool(object):
         self.logger.info('This can take some time...')
         run(cmd)
 
-    def _build(self, **kwargs):
-        """
-        Runs clean, nuget_restore, and xbuild all in one.
-        """
-        self._clean()
-        self._restore()
-        self._xbuild()
-
     def _archive(self, **kwargs):
         """
         Creates a tarball from output_paths by using
@@ -182,6 +174,12 @@ class MonoTool(object):
         # in to the temp directory (dirpath).
         self._copy(dirpath)
 
+        # copy the logfile into dirpath so we have
+        # it for later.
+        lf = logfile()
+        filename = lf.split('/')[-1]
+        copy(lf, '%s/%s' % (dirpath, filename))
+
         # Make a tarball of temp directory excluding top level
         # temp directory path name.
         self.logger.info('Saving tarball %s.%s.tar.gz' % (app, now))
@@ -189,6 +187,19 @@ class MonoTool(object):
 
         # clean up by deleting temp directory.
         delete(dirpath)
+
+    def _build(self, **kwargs):
+        """
+        Main build process, will run everything needed to build,
+        then copy all artifacts and logfile to a new tarball in
+        current directory path.
+        """
+        delete(logfile())
+        self._clean()
+        self._restore()
+        self._xbuild()
+        self._archive()
+
 
 def default_solution():
     """
