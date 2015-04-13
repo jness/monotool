@@ -14,7 +14,7 @@ Add Configuration to /etc/monotool.conf or ~/.monotool.conf and update.
   
   https://github.com/bigrentz/monotool/blob/master/monotool.conf.example
 
-## Update monotool on vagrant box using salt-call
+## Vagrant Install / Update (internal)
 
 If you are using the internal **BigRentz vagrant box**,
 you can update from inside the vagrant linux machine using salt-call.
@@ -23,10 +23,10 @@ you can update from inside the vagrant linux machine using salt-call.
 $ sudo salt-call state.sls monotool
 ```
 
-## Development Installation (OSX)
+## Development Installation
 
 If your are on OSX you can install mono and 
-xbuild from brew:
+xbuild from brew, else get it using your preferred method.
 
 ```
 $ brew install mono
@@ -68,10 +68,10 @@ $ virtualenv ~/virtualenv/monotool
 $ source ~/virtualenv/monotool/bin/activate
 ```
 
-Install monotool!
+Install monotool via develop
 
 ```
-$ python setup.py install
+$ python setup.py develop
 ```
 
 You hould now have monotool installed in your virtualenv:
