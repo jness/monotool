@@ -47,6 +47,7 @@ def get_args(version):
 
     archive = subparsers.add_parser('archive',
             help='Archives all the artifacts file found in the project to directory.')
+    archive.add_argument('dest', help='The destination directory of the tarball.')
     archive.set_defaults(method='_archive')
 
     # parse our parsers and get the args.

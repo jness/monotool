@@ -131,13 +131,15 @@ Commands:
     restore         Run nuget restore on a solution file.
     xbuild          xbuild on a solution file.
     build           runs clean, nuget_restore, and xbuild.
+    archive         Archives all the artifacts file found in the project to
+                    directory.
 ```
 
 ### Getting version
 
 ```
 $ monotool --version
-0.0.26
+0.0.30
 ```
 
 ### List all project definded in the Solution file
@@ -158,41 +160,40 @@ BigRentz.Project
 
 ```
 $ monotool clean
-2015-03-20 10:53:02,272 - INFO - Running: /usr/local/bin/xbuild BigRentz.Project.sln /t:clean
-2015-03-20 10:53:02,571 - INFO - Command Successful
+2015-04-13 08:54:29,743 - monotool.utils - INFO - Running command /usr/local/bin/xbuild BigRentz.Project.sln /t:clean
+2015-04-13 08:54:30,216 - monotool.utils - INFO - Command successful
 ```
 
 ### Run Nuget Restore
 
 ```
 $ monotool restore
-2015-03-19 07:48:18,610 - INFO - Running: /usr/bin/mono /opt/local/bin/nuget.exe restore BigRentz.Project.sln
-2015-03-19 07:48:18,610 - INFO - This can take some time...
-2015-03-19 07:48:26,621 - INFO - Command Successful
+2015-04-13 08:54:50,332 - monotool.monotool - INFO - This can take some time...
+2015-04-13 08:54:50,332 - monotool.utils - INFO - Running command /usr/local/bin/mono /usr/local/bin/nuget.exe restore BigRentz.Project.sln
+2015-04-13 08:54:50,678 - monotool.utils - INFO - Command successful
 ```
 
 ### Running xbuild
 
 ```
 $ monotool xbuild
-2015-03-19 07:48:44,936 - INFO - Running: /usr/bin/xbuild BigRentz.Project.sln
-2015-03-19 07:48:44,937 - INFO - This can take some time...
-2015-03-19 07:48:46,625 - INFO - Command Successful
+2015-04-13 08:55:07,862 - monotool.monotool - INFO - This can take some time...
+2015-04-13 08:55:07,862 - monotool.utils - INFO - Running command /usr/local/bin/xbuild BigRentz.Project.sln
+2015-04-13 08:55:09,791 - monotool.utils - INFO - Command successful
 ```
 
-### Running clean, nuget_restore and build at once
+### Running the complete build process and output a tarball.
 
 ```
 $ monotool build
-2015-03-20 12:48:02,272 - INFO - Running: /usr/local/bin/xbuild BigRentz.Project.sln /t:clean
-2015-03-20 12:48:02,571 - INFO - Command Successful
-2015-03-20 12:48:18,610 - INFO - Running: /usr/bin/mono /Users/jeffreyness/Downloads/NuGet.exe restore BigRentz.Project.sln
-2015-03-20 12:48:18,610 - INFO - This can take some time...
-2015-03-20 12:48:26,621 - INFO - Command Successful
-2015-03-20 12:48:44,936 - INFO - Running: /usr/bin/xbuild BigRentz.Project.sln
-2015-03-20 12:48:44,937 - INFO - This can take some time...
-2015-03-20 12:48:46,625 - INFO - Command Successful
-
+2015-04-13 08:55:30,268 - monotool.utils - INFO - Running command /usr/local/bin/xbuild BigRentz.Project.sln /t:clean
+2015-04-13 08:55:30,591 - monotool.utils - INFO - Command successful
+2015-04-13 08:55:30,592 - monotool.monotool - INFO - This can take some time...
+2015-04-13 08:55:30,592 - monotool.utils - INFO - Running command /usr/local/bin/mono /usr/local/bin/nuget.exe restore BigRentz.Project.sln
+2015-04-13 08:55:30,857 - monotool.utils - INFO - Command successful
+2015-04-13 08:55:30,858 - monotool.monotool - INFO - This can take some time...
+2015-04-13 08:55:30,858 - monotool.utils - INFO - Running command /usr/local/bin/xbuild BigRentz.Project.sln
+2015-04-13 08:55:32,435 - monotool.utils - INFO - Command successful
 ```
 
 ### Listing build artifacts.
@@ -206,18 +207,20 @@ BigRentz.Project
 ### Copy all artifacts to destination directory
 
 ```
-$ monotool copy bin/
-2015-03-19 07:49:40,095 - INFO - Copying BigRentz.Project.dll to bin/BigRentz.Project/
+$ monotool copy bins/
+
+$ ls -l bins/
+total 0
+drwxr-xr-x  21 jness  staff   714 Apr 13 08:56 BigRentz.Project
 ```
 
 ### Archiving all artifacts into a tarball.
 
 ```
-$ monotool archive
-2015-04-13 07:24:22,030 - monotool.monotool - INFO - Saving tarball monotool.20150413072421.tar.gz
-
-$ ls -lh *.tar.gz
--rw-r--r--  1 jeffreyness  staff   5.5M Apr 13 07:24 monotool.20150413072421.tar.gz
+$ monotool archive .
+2015-04-13 08:57:33,195 - monotool.utils - INFO - Running command git rev-parse HEAD
+2015-04-13 08:57:33,201 - monotool.utils - INFO - Command successful
+2015-04-13 08:57:33,201 - monotool.monotool - INFO - Saving tarball ./Project.be96ee3fa91084360ae637226e3cc954e388b0f4.tar.gz
 ```
 
 ### Debugging
@@ -226,5 +229,5 @@ monotool will log INFO level to standard out and DEBUG level to /tmp/monotool.lo
 
 ```
 $ tail -n 1 /tmp/monotool.log
-2015-04-09 13:14:21,568 - monotool.utils - INFO - Command successful
+2015-04-13 08:57:33,201 - monotool.monotool - INFO - Saving tarball ./Project.be96ee3fa91084360ae637226e3cc954e388b0f4.tar.gz
 ```

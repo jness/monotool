@@ -36,6 +36,14 @@ class MonoTool(object):
         self.mono_path = self.config['mono_path']
         self.nuget_path = self.config['nuget_path']
 
+    def __get_app_name(self):
+        """
+        We determine app name by taking our solution_file
+        and spliting on dots.
+        """
+        company, app, ext = self.solution_file.split('.')
+        return app
+
     def __get_projects(self):
         """
         Gets the project defined by reading a solution file.
@@ -105,7 +113,6 @@ class MonoTool(object):
         Copies the artifacts from a solutions file to destination directory.
 
         """
-        copied = 0
         dest = dest.rstrip('/')
 
         # create directory if not present
@@ -126,8 +133,6 @@ class MonoTool(object):
 
                 # copyfile or copytree depending on if file or directory.
                 copy(artifact, '%s/%s' % (dir_name, filename))
-
-                copied += 1
 
             # copy in envrc.sh if found and create upstart
             envrc = '%s/envrc.sh' % project_name
@@ -161,44 +166,47 @@ class MonoTool(object):
         self.logger.info('This can take some time...')
         run(cmd)
 
-    def _archive(self, **kwargs):
+    def _archive(self, dest, **kwargs):
         """
         Creates a tarball from output_paths by using
-        the _copy function.
+        the _copy function and stores the logfile in
+        the tarball.
         """
-        now = timestamp(verbose=False)
-        app = app_name()
-        dirpath = tempfile.mkdtemp()
+        dest = dest.rstrip('/')
+
+        # make a temp directory
+        tempath = tempfile.mkdtemp()
 
         # use monotool._copy to get all our artifacts
-        # in to the temp directory (dirpath).
-        self._copy(dirpath)
+        # in to the temp directory (tempath).
+        self._copy(tempath)
 
-        # copy the logfile into dirpath so we have
+        # copy the logfile into tempath so we have
         # it for later.
         lf = logfile()
         filename = lf.split('/')[-1]
-        copy(lf, '%s/%s' % (dirpath, filename))
+        copy(lf, '%s/%s' % (tempath, filename))
 
-        # Make a tarball of temp directory excluding top level
-        # temp directory path name.
-        self.logger.info('Saving tarball %s.%s.tar.gz' % (app, now))
-        mktar(dirpath, '%s.%s.tar.gz' % (app, now))
+        # use git hash of our current directory as part of the
+        # tarball name.
+        ghash, _, _ = run('git rev-parse HEAD')
+        ghash = ghash.rstrip()  # remove new line character.
+        app = self.__get_app_name()
+
+        # create tarball
+        self.logger.info('Saving tarball %s/%s.%s.tar.gz' % (dest, app, ghash))
+        mktar(tempath, '%s/%s.%s.tar.gz' % (dest, app, ghash))
 
         # clean up by deleting temp directory.
-        delete(dirpath)
+        delete(tempath)
 
     def _build(self, **kwargs):
         """
-        Main build process, will run everything needed to build,
-        then copy all artifacts and logfile to a new tarball in
-        current directory path.
+        Main build process, will run everything needed to build.
         """
-        delete(logfile())
         self._clean()
         self._restore()
         self._xbuild()
-        self._archive()
 
 
 def default_solution():
