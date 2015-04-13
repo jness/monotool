@@ -23,31 +23,31 @@ def get_args(version):
             help='Lists all artifacts files found in the project.')
     lsa.set_defaults(method='_lsa')
 
-    copy = subparsers.add_parser('copy',
-            help='Copies all artifacts files found in the project to directory.')
-    copy.add_argument('dest', help='The destination directory.')
-    copy.set_defaults(method='_copy')
-
     clean = subparsers.add_parser('clean',
             help='Runs xbuild clean, this will delete all artifacts.')
     clean.set_defaults(method='_clean')
 
-    nuget_restore = subparsers.add_parser('restore',
+    restore = subparsers.add_parser('restore',
             help='Run nuget restore on a solution file.')
-    nuget_restore.set_defaults(method='_restore')
+    restore.set_defaults(method='_restore')
 
     xbuild = subparsers.add_parser('xbuild',
-            help='xbuild on a solution file.')
+            help='Xbuilds on a solution file.')
     xbuild.set_defaults(method='_xbuild')
 
     build = subparsers.add_parser('build',
-            help='runs clean, nuget_restore, and xbuild.')
+            help='Runs end to end build process.')
     build.set_defaults(method='_build')
 
     archive = subparsers.add_parser('archive',
-            help='Archives all the artifacts file found in the project to directory.')
+            help='Archives artifact files found in all projects to tarball.')
     archive.add_argument('dest', help='The destination directory of the tarball.')
     archive.set_defaults(method='_archive')
+
+    copy = subparsers.add_parser('copy',
+            help='Copies artifact files found in all projects to directory.')
+    copy.add_argument('dest', help='The destination directory.')
+    copy.set_defaults(method='_copy')
 
     # parse our parsers and get the args.
     args = parser.parse_args()

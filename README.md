@@ -152,14 +152,12 @@ Commands:
 
     lsp             Lists all project files found in the solution.
     lsa             Lists all artifacts files found in the project.
-    copy            Copies all artifacts files found in the project to
-                    directory.
     clean           Runs xbuild clean, this will delete all artifacts.
     restore         Run nuget restore on a solution file.
-    xbuild          xbuild on a solution file.
-    build           runs clean, nuget_restore, and xbuild.
-    archive         Archives all the artifacts file found in the project to
-                    directory.
+    xbuild          Xbuilds on a solution file.
+    build           Runs end to end build process.
+    archive         Archives artifact files found in all projects to tarball.
+    copy            Copies artifact files found in all projects to directory.
 ```
 
 ### Getting version
