@@ -19,7 +19,6 @@ def get_args(version):
             help='Lists all project files found in the solution.')
     lsp.set_defaults(method='_lsp')
 
-
     lsa = subparsers.add_parser('lsa',
             help='Lists all artifacts files found in the project.')
     lsa.set_defaults(method='_lsa')

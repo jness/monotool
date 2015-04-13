@@ -4,48 +4,70 @@ Tool to help BigRentz with Mono building and distributing.
 
 ## Installation
 
+If your are on OSX you can install mono and 
+xbuild from brew:
+
 ```
-# If your are on OSX you can install mono and 
-# xbuild from brew:
 brew install mono
+```
 
-# Install nuget the package manager for the
-# Microsoft development platform
+Install nuget the package manager for the
+Microsoft development platform
+
+```
 sudo wget http://nuget.org/nuget.exe -O /opt/local/bin/nuget.exe
+```
 
-# Install Python virtualenv and pip 
-# http://docs.python-guide.org/en/latest/dev/virtualenvs/
+Install Python virtualenv and pip 
+http://docs.python-guide.org/en/latest/dev/virtualenvs/
+
+```
 sudo easy_install pip
 sudo pip install virtualenv
+```
 
-# Get the latest monotool source from Github:
+Get the latest monotool source from Github:
+
+```
 git clone git@github.com:bigrentz/monotool.git
 cd monotool/
+```
 
-# Copy the example config to your user profile and edit:
+Copy the example config to your user profile and edit:
+
+```
 cp monotool.conf.example ~/.monotool.conf
 vim ~/.monotool.conf
+```
 
-# Create a activate Python virtualenv for site-packages:
+Create a activate Python virtualenv for site-packages:
+
+```
 virtualenv ~/virtualenv/monotool
 source ~/virtualenv/monotool/bin/activate
+```
 
-# Install monotool!
+Install monotool!
+
+```
 python setup.py install
 ```
 
 ## Quick Install (system wide)
 
+Install from Git
+
 ```
-# Install from Git
 sudo pip install git+https://github.com/bigrentz/monotool.git
-
-# Add Configuration to /etc/monotool.conf
-# Example configuration can be found below:
-#  * https://github.com/bigrentz/monotool/blob/master/monotool.conf.example
 ```
 
-## Directory Structure
+Add Configuration to /etc/monotool.conf
+
+Example configuration can be found below:
+  
+  https://github.com/bigrentz/monotool/blob/master/monotool.conf.example
+
+## Project Directory Structure
 
 monotool expects the following directory structure per projects:
 
