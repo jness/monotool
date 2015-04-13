@@ -8,49 +8,49 @@ If your are on OSX you can install mono and
 xbuild from brew:
 
 ```
-brew install mono
+$ brew install mono
 ```
 
 Install nuget the package manager for the
 Microsoft development platform
 
 ```
-sudo wget http://nuget.org/nuget.exe -O /opt/local/bin/nuget.exe
+$ sudo wget http://nuget.org/nuget.exe -O /opt/local/bin/nuget.exe
 ```
 
 Install Python virtualenv and pip 
 http://docs.python-guide.org/en/latest/dev/virtualenvs/
 
 ```
-sudo easy_install pip
-sudo pip install virtualenv
+$ sudo easy_install pip
+$ sudo pip install virtualenv
 ```
 
 Get the latest monotool source from Github:
 
 ```
-git clone git@github.com:bigrentz/monotool.git
-cd monotool/
+$ git clone git@github.com:bigrentz/monotool.git
+$ cd monotool/
 ```
 
 Copy the example config to your user profile and edit:
 
 ```
-cp monotool.conf.example ~/.monotool.conf
-vim ~/.monotool.conf
+$ cp monotool.conf.example ~/.monotool.conf
+$ vim ~/.monotool.conf
 ```
 
 Create a activate Python virtualenv for site-packages:
 
 ```
-virtualenv ~/virtualenv/monotool
-source ~/virtualenv/monotool/bin/activate
+$ virtualenv ~/virtualenv/monotool
+$ source ~/virtualenv/monotool/bin/activate
 ```
 
 Install monotool!
 
 ```
-python setup.py install
+$ python setup.py install
 ```
 
 ## Quick Install (system wide)
@@ -58,7 +58,7 @@ python setup.py install
 Install from Git
 
 ```
-sudo pip install git+https://github.com/bigrentz/monotool.git
+$ sudo pip install git+https://github.com/bigrentz/monotool.git
 ```
 
 Add Configuration to /etc/monotool.conf
