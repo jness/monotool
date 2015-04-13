@@ -19,7 +19,7 @@ def get_logger(name):
 		ch.setLevel(logging.INFO)
 		logger.addHandler(ch)
 
-		fh = logging.FileHandler('%s.log' % app_name())
+		fh = logging.FileHandler('/tmp/%s.log' % app_name())
 		fh.setFormatter(format)
 		fh.setLevel(logging.DEBUG)
 		logger.addHandler(fh)

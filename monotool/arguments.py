@@ -45,6 +45,10 @@ def get_args(version):
             help='runs clean, nuget_restore, and xbuild.')
     build.set_defaults(method='_build')
 
+    archive = subparsers.add_parser('archive',
+            help='Archives all the artifacts file found in the project to directory.')
+    archive.set_defaults(method='_archive')
+
     # parse our parsers and get the args.
     args = parser.parse_args()
     return args

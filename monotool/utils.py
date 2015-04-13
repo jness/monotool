@@ -1,6 +1,8 @@
 from subprocess import Popen, PIPE
 from datetime import datetime
 import shutil
+import tarfile
+import os
 
 from config import get_config
 from logger import get_logger
@@ -24,11 +26,13 @@ def run(command):
     logger.info('Command successful')
     return stdout, stderr, process.returncode
 
-def timestamp():
+def timestamp(verbose=True):
     """
     Returns a human readable timestamp.
     """
-    return datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
+    if verbose:
+        return datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
+    return datetime.now().strftime("%Y%m%d%H%M%S")
 
 def write(filename, data):
     """
@@ -49,6 +53,18 @@ def read(filename):
     f.close()
     return data
 
+def delete(filename):
+    """
+    Deletes a file or directory.
+    """
+    logger = get_logger(__name__)
+    if os.path.isfile(filename):
+        logger.debug('Deleting file %s' % filename)
+        os.remove(filename)
+    else:
+        logger.debug('Deleting directory %s' % filename)
+        shutil.rmtree(filename)
+
 def copy(path, dest):
     """
     Copy a file or directory to destination.
@@ -59,3 +75,10 @@ def copy(path, dest):
         shutil.copyfile(path, dest)
     except IOError:
         shutil.copytree(path, dest)
+
+def mktar(path, dest):
+    """
+    Creates a tar.gz from path and saves it to dest.
+    """
+    with tarfile.open(dest, "w:gz") as tar:
+        tar.add(path, arcname='')

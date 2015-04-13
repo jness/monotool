@@ -210,11 +210,21 @@ $ monotool copy bin/
 2015-03-19 07:49:40,095 - INFO - Copying BigRentz.Project.dll to bin/BigRentz.Project/
 ```
 
-### Debugging
-
-monotool will log INFO level to standard out and DEBUG level to ./monotool.log:
+### Archiving all artifacts into a tarball.
 
 ```
-$ tail -n 1 monotool.log
+$ monotool archive
+2015-04-13 07:24:22,030 - monotool.monotool - INFO - Saving tarball monotool.20150413072421.tar.gz
+
+$ ls -lh *.tar.gz
+-rw-r--r--  1 jeffreyness  staff   5.5M Apr 13 07:24 monotool.20150413072421.tar.gz
+```
+
+### Debugging
+
+monotool will log INFO level to standard out and DEBUG level to /tmp/monotool.log:
+
+```
+$ tail -n 1 /tmp/monotool.log
 2015-04-09 13:14:21,568 - monotool.utils - INFO - Command successful
 ```

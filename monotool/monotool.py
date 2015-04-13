@@ -5,10 +5,11 @@ from glob import glob
 from re import search
 
 import pystache
+import tempfile
 import sys
 import os
 
-from utils import run, copy, write, read, timestamp
+from utils import run, copy, write, read, delete, mktar, timestamp
 from app import app_name
 from arguments import get_args
 from config import get_config
@@ -135,8 +136,6 @@ class MonoTool(object):
                 copy(envrc, '%s/%s' % (dir_name, 'envrc.sh'))
                 self.__write_templates(project_name, dir_name)
 
-        print 'Copied %d files to %s' % (copied, dest)
-
     def _clean(self, **kwargs):
         """
         Runs xbuild /t:clean to clear all artifacts.
@@ -170,6 +169,26 @@ class MonoTool(object):
         self._restore()
         self._xbuild()
 
+    def _archive(self, **kwargs):
+        """
+        Creates a tarball from output_paths by using
+        the _copy function.
+        """
+        now = timestamp(verbose=False)
+        app = app_name()
+        dirpath = tempfile.mkdtemp()
+
+        # use monotool._copy to get all our artifacts
+        # in to the temp directory (dirpath).
+        self._copy(dirpath)
+
+        # Make a tarball of temp directory excluding top level
+        # temp directory path name.
+        self.logger.info('Saving tarball %s.%s.tar.gz' % (app, now))
+        mktar(dirpath, '%s.%s.tar.gz' % (app, now))
+
+        # clean up by deleting temp directory.
+        delete(dirpath)
 
 def default_solution():
     """
