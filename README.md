@@ -1,6 +1,6 @@
 # Monotool
 
-A tool for assisting with the Mono build process.
+Tool to help BigRentz with Mono building and distributing.
 
 ## Installation
 
