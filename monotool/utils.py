@@ -79,4 +79,4 @@ def mktar(path, dest):
     Creates a tar.gz from path and saves it to dest.
     """
     with tarfile.open(dest, "w:gz") as tar:
-        tar.add(path, arcname='')
+        tar.add(path, arcname='./')
