@@ -214,7 +214,7 @@ total 0
 drwxr-xr-x  21 jness  staff   714 Apr 13 08:56 BigRentz.Project
 ```
 
-### Archiving all artifacts into a tarball.
+### Create tarball of all artifacts (includes git commit hash in filename).
 
 ```
 $ monotool archive .
