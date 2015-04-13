@@ -53,6 +53,26 @@ Install monotool!
 $ python setup.py install
 ```
 
+You hould now haev monotool installed in your virtualenv:
+
+```
+$ which monotool
+/Users/jness/virtualenv/monotool/bin/monotool
+```
+
+You can deactivate the virtualenv by either exiting the console
+session, or running the following:
+
+```
+$ deactivate
+```
+
+To re-enable the virtualenv run:
+
+```
+$ source ~/virtualenv/monotool/bin/activate
+```
+
 ## Quick Install (system wide)
 
 Install from Git
@@ -116,21 +136,6 @@ If present we will create a few scripts based of our templates:
    https://github.com/bigrentz/monotool/tree/master/monotool/templates
 
 ## Usage
-
-### Activating the monotool virtualenv
-
-If you have not already activated your virtualenv do it now
-
-```
-$ source ~/virtualenv/monotool/bin/activate
-```
-
-You can deactivate by either exiting the command session, 
-or running the following:
-
-```
-$ deactivate
-```
 
 ### Getting help
 
