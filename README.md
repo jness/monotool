@@ -2,7 +2,28 @@
 
 Tool to help BigRentz with Mono building and distributing.
 
-## Installation OSX
+## Quick Install (system-wide)
+
+Install from Git
+
+```
+$ sudo pip install git+https://github.com/bigrentz/monotool.git
+```
+
+Add Configuration to /etc/monotool.conf or ~/.monotool.conf and update.
+  
+  https://github.com/bigrentz/monotool/blob/master/monotool.conf.example
+
+## Update monotool on vagrant box using salt-call
+
+If you are using the internal **BigRentz vagrant box**,
+you can update from inside the vagrant linux machine using salt-call.
+
+```
+$ sudo salt-call state.sls monotool
+```
+
+## Development Installation (OSX)
 
 If your are on OSX you can install mono and 
 xbuild from brew:
@@ -72,30 +93,6 @@ To re-enable the virtualenv run:
 ```
 $ source ~/virtualenv/monotool/bin/activate
 ```
-
-## Update monotool on vagrant box using salt-call
-
-If you are using the **BigRentz vagrant box**,
-you can update from inside the vagrant linux
-machine using salt-call.
-
-```
-$ sudo salt-call state.sls monotool
-```
-
-## Quick Install (system wide)
-
-Install from Git
-
-```
-$ sudo pip install git+https://github.com/bigrentz/monotool.git
-```
-
-Add Configuration to /etc/monotool.conf
-
-Example configuration can be found below:
-  
-  https://github.com/bigrentz/monotool/blob/master/monotool.conf.example
 
 ## Project Directory Structure
 
