@@ -53,7 +53,7 @@ Install monotool!
 $ python setup.py install
 ```
 
-You hould now haev monotool installed in your virtualenv:
+You hould now have monotool installed in your virtualenv:
 
 ```
 $ which monotool
